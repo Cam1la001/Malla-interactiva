@@ -7,6 +7,7 @@
     "ht": 3,
     "hpr": 0,
     "nivel": 1,
+    "area": "CHUM",
     "prerequisitos": []
   },
   {
@@ -17,6 +18,7 @@
     "ht": 4,
     "hpr": 0,
     "nivel": 1,
+    "area": "CBAS",
     "prerequisitos": []
   },
   {
@@ -27,6 +29,7 @@
     "ht": 4,
     "hpr": 0,
     "nivel": 1,
+    "area": "CBAS",
     "prerequisitos": []
   },
   {
@@ -37,6 +40,7 @@
     "ht": 3,
     "hpr": 1,
     "nivel": 1,
+    "area": "CBAS",
     "prerequisitos": []
   },
   {
@@ -47,6 +51,7 @@
     "ht": 0,
     "hpr": 0,
     "nivel": 1,
+    "area": "ECOU",
     "prerequisitos": []
   },
   {
@@ -57,6 +62,7 @@
     "ht": 3,
     "hpr": 0,
     "nivel": 1,
+    "area": "IMEC",
     "prerequisitos": []
   },
   {
@@ -67,6 +73,7 @@
     "ht": 2,
     "hpr": 0,
     "nivel": 1,
+    "area": "IMTR",
     "prerequisitos": []
   },
   {
@@ -77,6 +84,7 @@
     "ht": 1,
     "hpr": 2,
     "nivel": 1,
+    "area": "ISCO",
     "prerequisitos": []
   },
   {
@@ -87,6 +95,7 @@
     "ht": 4,
     "hpr": 0,
     "nivel": 2,
+    "area": "CHUL",
     "prerequisitos": []
   },
   {
@@ -97,6 +106,7 @@
     "ht": 4,
     "hpr": 1,
     "nivel": 2,
+    "area": "CBAS",
     "prerequisitos": ["1B", "1C"]
   },
   {
@@ -107,6 +117,7 @@
     "ht": 4,
     "hpr": 0,
     "nivel": 2,
+    "area": "CBAS",
     "prerequisitos": ["1B"]
   },
   {
@@ -117,6 +128,7 @@
     "ht": 3,
     "hpr": 0,
     "nivel": 2,
+    "area": "CBAS",
     "prerequisitos": []
   },
   {
@@ -127,6 +139,7 @@
     "ht": 1,
     "hpr": 1,
     "nivel": 2,
+    "area": "IMTR",
     "prerequisitos": ["1G"]
   },
   {
@@ -137,6 +150,8 @@
     "ht": 1,
     "hpr": 2,
     "nivel": 2,
+    "area": "ISCO",
     "prerequisitos": ["1H"]
   }
 ]
+
