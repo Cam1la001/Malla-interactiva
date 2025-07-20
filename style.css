@@ -68,3 +68,47 @@ h1 {
 .AEMP { background-color: #7A9E7E; }
 .ECON { background-color: #CDA534; }
 .IIND { background-color: #999999; }
+.materia {
+  display: flex;
+  flex-direction: column;
+  background-color: #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.8em;
+  padding: 0;
+}
+
+.info-tabla {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: rgba(255,255,255,0.9);
+  color: black;
+  border-bottom: 1px solid #aaa;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.7em;
+}
+
+.celda {
+  border-right: 1px solid #ddd;
+  padding: 0.2em;
+}
+
+.celda:last-child {
+  border-right: none;
+}
+
+.celda.small {
+  font-size: 0.6em;
+  color: #333;
+}
+
+.nombre-materia {
+  padding: 0.8em 0.5em;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1em;
+  color: white;
+}
+
+/* Se mantiene lo anterior para colores, tachado y bloqueado */
