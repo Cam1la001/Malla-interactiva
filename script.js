@@ -15,26 +15,26 @@ function render() {
   const niveles = [...new Set(materias.map(m => m.nivel))].sort((a, b) => a - b);
 
   niveles.forEach(nivel => {
-    const divNivel = document.createElement("div");
-    divNivel.className = "nivel";
-    divNivel.innerHTML = `<h2>Nivel ${nivel}</h2>`;
+    const col = document.createElement("div");
+    col.className = "columna-nivel";
+    col.innerHTML = `<h2>Nivel ${nivel}</h2>`;
 
     const materiasNivel = materias.filter(m => m.nivel === nivel);
     materiasNivel.forEach(materia => {
       const bloqueada = !materia.prerequisitos.every(pr => completadas.includes(pr));
       const divMateria = document.createElement("div");
 
-      divMateria.className = "materia";
+      divMateria.className = `materia ${materia.area}`;
       if (completadas.includes(materia.codigo)) divMateria.classList.add("tachada");
       else if (bloqueada) divMateria.classList.add("bloqueada");
 
-      divMateria.textContent = `${materia.codigo} – ${materia.nombre}`;
+      divMateria.textContent = `${materia.codigo}\n${materia.nombre}`;
       divMateria.onclick = () => toggleMateria(materia.codigo);
 
-      divNivel.appendChild(divMateria);
+      col.appendChild(divMateria);
     });
 
-    container.appendChild(divNivel);
+    container.appendChild(col);
   });
 }
 
@@ -48,4 +48,3 @@ function toggleMateria(codigo) {
   localStorage.setItem("materiasHechas", JSON.stringify(completadas));
   render();
 }
-
