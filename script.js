@@ -48,3 +48,4 @@ function toggleMateria(codigo) {
   localStorage.setItem("materiasHechas", JSON.stringify(completadas));
   render();
 }
+
