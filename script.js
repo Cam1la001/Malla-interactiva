@@ -28,9 +28,20 @@ function render() {
       if (completadas.includes(materia.codigo)) divMateria.classList.add("tachada");
       else if (bloqueada) divMateria.classList.add("bloqueada");
 
-      divMateria.textContent = `${materia.codigo}\n${materia.nombre}`;
-      divMateria.onclick = () => toggleMateria(materia.codigo);
+      divMateria.innerHTML = `
+        <div class="info-tabla">
+          <div class="celda small">${materia.prerequisitos.join(', ') || ''}</div>
+          <div class="celda">${materia.area}</div>
+          <div class="celda">${materia.curso.split('-')[1]}</div>
+          <div class="celda">${materia.creditos}</div>
+          <div class="celda">${materia.ht}</div>
+          <div class="celda">${materia.hpr}</div>
+          <div class="celda small">${materia.codigo}</div>
+        </div>
+        <div class="nombre-materia">${materia.nombre}</div>
+      `;
 
+      divMateria.onclick = () => toggleMateria(materia.codigo);
       col.appendChild(divMateria);
     });
 
