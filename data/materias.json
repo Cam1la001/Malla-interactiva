@@ -1,1 +1,143 @@
+[
+  {
+    "codigo": "1A",
+    "nombre": "Taller de Comprensión Lectora",
+    "curso": "CHUM-H01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1B",
+    "nombre": "Cálculo Diferencial",
+    "curso": "CBAS-M01A",
+    "creditos": 4,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1C",
+    "nombre": "Matemáticas Básicas",
+    "curso": "CBAS-M02A",
+    "creditos": 2,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1D",
+    "nombre": "Química General",
+    "curso": "CBAS-Q01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1E",
+    "nombre": "Desarrollo Universitario",
+    "curso": "ECOU-U01A",
+    "creditos": 0,
+    "ht": 0,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1F",
+    "nombre": "Expresión Gráfica",
+    "curso": "IMEC-D01A",
+    "creditos": 2,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1G",
+    "nombre": "Seminario de Ing. Mecatrónica",
+    "curso": "IMTR-B01A",
+    "creditos": 1,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "1H",
+    "nombre": "Fundamentos de Programación",
+    "curso": "ISCO-C02A",
+    "creditos": 3,
+    "ht": 1,
+    "hpr": 2,
+    "nivel": 1,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "2A",
+    "nombre": "Lengua Extranjera I",
+    "curso": "CHUL-LE1A",
+    "creditos": 2,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 2,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "2B",
+    "nombre": "Física Mecánica",
+    "curso": "CBAS-F01A",
+    "creditos": 4,
+    "ht": 4,
+    "hpr": 1,
+    "nivel": 2,
+    "prerequisitos": ["1B", "1C"]
+  },
+  {
+    "codigo": "2C",
+    "nombre": "Cálculo Integral",
+    "curso": "CBAS-M03A",
+    "creditos": 4,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 2,
+    "prerequisitos": ["1B"]
+  },
+  {
+    "codigo": "2D",
+    "nombre": "Álgebra Lineal",
+    "curso": "CBAS-M04A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 2,
+    "prerequisitos": []
+  },
+  {
+    "codigo": "2E",
+    "nombre": "Taller de Mecatrónica",
+    "curso": "IMTR-M01A",
+    "creditos": 1,
+    "ht": 1,
+    "hpr": 1,
+    "nivel": 2,
+    "prerequisitos": ["1G"]
+  },
+  {
+    "codigo": "2F",
+    "nombre": "Programación",
+    "curso": "ISCO-C03A",
+    "creditos": 3,
+    "ht": 1,
+    "hpr": 2,
+    "nivel": 2,
+    "prerequisitos": ["1H"]
+  }
+]
 
