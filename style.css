@@ -1,1 +1,58 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  margin: 0;
+  padding: 1em;
+}
+
+h1 {
+  text-align: center;
+  color: #222;
+}
+
+.instrucciones {
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 1em;
+}
+
+.nivel {
+  margin: 1.5em 0;
+  padding: 1em;
+  background-color: #fff;
+  border-left: 4px solid #444;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.nivel h2 {
+  margin-top: 0;
+  color: #444;
+}
+
+.materia {
+  padding: 0.5em 1em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin: 0.5em 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.materia:hover {
+  background-color: #eaeaea;
+}
+
+.materia.tachada {
+  background-color: #d2ffd2;
+  text-decoration: line-through;
+  color: #555;
+}
+
+.materia.bloqueada {
+  background-color: #f0f0f0;
+  color: #999;
+  pointer-events: none;
+}
 
