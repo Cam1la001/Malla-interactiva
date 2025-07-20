@@ -1,3 +1,4 @@
+/* ---------- Estilo general ---------- */
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f5f5f5;
@@ -7,15 +8,24 @@ body {
 
 h1 {
   text-align: center;
+  margin-bottom: 0.5em;
+}
+
+.instrucciones {
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
   margin-bottom: 1em;
 }
 
+/* ---------- Grid de la malla ---------- */
 .grid-malla {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 10px;
   margin: 0 auto;
   max-width: 1400px;
+  padding: 10px;
 }
 
 .columna-nivel {
@@ -30,14 +40,13 @@ h1 {
   margin: 0.5em 0;
 }
 
+/* ---------- Bloques de materia ---------- */
 .materia {
-  padding: 0.5em;
-  font-size: 0.85em;
+  display: flex;
+  flex-direction: column;
   border-radius: 6px;
-  color: white;
+  overflow: hidden;
   cursor: pointer;
-  text-align: center;
-  font-weight: bold;
   transition: transform 0.1s ease;
 }
 
@@ -55,34 +64,12 @@ h1 {
   pointer-events: none;
 }
 
-/* Colores por área */
-.CBAS { background-color: #7D9FEF; }
-.CHUL { background-color: #F2B35D; }
-.CHUM { background-color: #A16AE8; }
-.ECOU { background-color: #6EC5B8; }
-.IMTR { background-color: #50C9A6; }
-.IMEC { background-color: #5C7AEA; }
-.ISCO { background-color: #EF717A; }
-.IETR { background-color: #1D87C5; }
-.IELE { background-color: #D96459; }
-.AEMP { background-color: #7A9E7E; }
-.ECON { background-color: #CDA534; }
-.IIND { background-color: #999999; }
-.materia {
-  display: flex;
-  flex-direction: column;
-  background-color: #ccc;
-  border-radius: 6px;
-  overflow: hidden;
-  font-size: 0.8em;
-  padding: 0;
-}
-
+/* ---------- Tabla superior dentro del bloque ---------- */
 .info-tabla {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background-color: rgba(255,255,255,0.9);
-  color: black;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #222;
   border-bottom: 1px solid #aaa;
   text-align: center;
   font-weight: bold;
@@ -100,15 +87,29 @@ h1 {
 
 .celda.small {
   font-size: 0.6em;
-  color: #333;
+  color: #555;
 }
 
+/* ---------- Nombre de la materia ---------- */
 .nombre-materia {
   padding: 0.8em 0.5em;
   text-align: center;
   font-weight: bold;
   font-size: 1em;
   color: white;
+  text-transform: uppercase;
 }
 
-/* Se mantiene lo anterior para colores, tachado y bloqueado */
+/* ---------- Colores por área ---------- */
+.CBAS { background-color: #7D9FEF; }      /* Ciencias Básicas */
+.CHUL { background-color: #F2B35D; }      /* Lenguas */
+.CHUM { background-color: #A16AE8; }      /* Humanidades */
+.ECOU { background-color: #6EC5B8; }      /* Desarrollo Univ */
+.IMTR { background-color: #50C9A6; }      /* Mecatrónica */
+.IMEC { background-color: #5C7AEA; }      /* Mecánica */
+.ISCO { background-color: #EF717A; }      /* Software/Informática */
+.IETR { background-color: #1D87C5; }      /* Electrónica */
+.IELE { background-color: #D96459; }      /* Eléctrica */
+.AEMP { background-color: #7A9E7E; }      /* Emprendimiento */
+.ECON { background-color: #CDA534; }      /* Economía */
+.IIND { background-color: #999999; }      /* Industrial */
