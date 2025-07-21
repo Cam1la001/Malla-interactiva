@@ -286,70 +286,70 @@
     "prerequisitos": ["2B","2D"]
   },
   {
-    "codigo": "4E",
-    "nombre": "Materiales de Ingeniería",
-    "curso": "IMEC-D05A",
-    "creditos": 3,
-    "ht": 3,
-    "hpr": 1,
-    "nivel": 5,
-    "area": "IMEC",
-    "prerequisitos": ["3F"]
-  },
-  {
-    "codigo": "4F",
-    "nombre": "Medición e Instrumentación",
-    "curso": "IMTR-M02A",
-    "creditos": 3,
-    "ht": 2,
-    "hpr": 2,
-    "nivel": 5,
-    "area": "IMTR",
-    "prerequisitos": ["3E"]
-  },
-  {
     "codigo": "5A",
-    "nombre": "Sistemas de Control I",
-    "curso": "IMTR-M03A",
-    "creditos": 3,
-    "ht": 3,
-    "hpr": 1,
+    "nombre": "Lengua extrangera IV",
+    "curso": "CHUL-LE4A",
+    "creditos": 2,
+    "ht": 4,
+    "hpr": 0,
     "nivel": 5,
-    "area": "IMTR",
-    "prerequisitos": ["4F"]
+    "area": "CHUL",
+    "prerequisitos": ["4A"]
   },
   {
     "codigo": "5B",
-    "nombre": "Electrónica Analógica",
-    "curso": "IETR-F04A",
+    "nombre": "Señales y sistemas",
+    "curso": "IETR-F03A",
     "creditos": 4,
-    "ht": 3,
-    "hpr": 2,
+    "ht": 4,
+    "hpr": 1,
     "nivel": 5,
     "area": "IETR",
-    "prerequisitos": ["4C"]
+    "prerequisitos": ["4D"]
   },
   {
     "codigo": "5C",
-    "nombre": "Mecánica de Materiales",
-    "curso": "IMEC-D06A",
+    "nombre": "Dinámica",
+    "curso": "IMEC-D04A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 5,
+    "area": "IMEC",
+    "prerequisitos": ["4F"]
+  },
+  {
+    "codigo": "5D",
+    "nombre": "Termodinamica y fluidos",
+    "curso": "IMEC-F08A",
     "creditos": 3,
     "ht": 3,
     "hpr": 1,
     "nivel": 5,
     "area": "IMEC",
-    "prerequisitos": ["4D", "4E"]
+    "prerequisitos": ["4D"]
   },
   {
-    "codigo": "5D",
-    "nombre": "Análisis de Señales",
-    "curso": "IMTR-M04A",
+    "codigo": "5E",
+    "nombre": "Materiales I",
+    "curso": "IMEC-F08A",
     "creditos": 3,
-    "ht": 2,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 5,
+    "area": "IMEC",
+    "prerequisitos": ["1D"]
+  },
+  {
+    "codigo": "5F",
+    "nombre": "Procesamiento numerico",
+    "curso": "ISCO-C07A",
+    "creditos": 3,
+    "ht": 1,
     "hpr": 2,
     "nivel": 5,
-    "area": "IMTR",
-    "prerequisitos": ["4F"]
+    "area": "ISCO",
+    "prerequisitos": ["2F","4D"]
   },
   {
     "codigo": "5E",
@@ -358,7 +358,7 @@
     "creditos": 3,
     "ht": 2,
     "hpr": 2,
-    "nivel": 5,
+    "nivel": 6,
     "area": "IMTR",
     "prerequisitos": ["5D"]
   },
