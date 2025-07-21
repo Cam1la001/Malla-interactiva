@@ -3,8 +3,9 @@
 const nivelesContainer = document.getElementById("niveles-container");
 const sugerenciasDiv = document.getElementById("sugerencias-materias");
 const totalCreditosSpan = document.getElementById("total-creditos");
+const exportarBtn = document.getElementById("exportar-btn");
+const limpiarBtn = document.getElementById("limpiar-btn");
 
-// Cargar datos de materias (desde data.json o variable embebida si lo haces local)
 let materias = [];
 
 fetch("materias.json")
@@ -18,6 +19,7 @@ fetch("materias.json")
   });
 
 function construirMalla() {
+  nivelesContainer.innerHTML = "";
   const niveles = [...new Set(materias.map(m => m.nivel))].sort((a, b) => a - b);
   niveles.forEach(nivel => {
     const col = document.createElement("div");
@@ -46,7 +48,7 @@ function crearTarjetaMateria(materia) {
   const tabla = document.createElement("div");
   tabla.className = "info-tabla";
   const columnas = [
-    materia.codigo || "", materia.area, materia.curso, materia.creditos, materia.ht, materia.hpr, ""
+    materia.codigo || "", materia.area, materia.curso, materia.creditos, materia.ht, materia.hpr, (materia.prerequisitos || []).join(", ")
   ];
   columnas.forEach(c => {
     const celda = document.createElement("div");
@@ -120,20 +122,17 @@ function actualizarPlanificador() {
   const tachadas = Array.from(document.querySelectorAll(".materia.tachada"))
     .map(m => m.dataset.curso);
 
-  // Detectar niveles incompletos y tomar los 2 más cercanos
   const nivelesPendientes = [...new Set(materias
     .filter(m => !tachadas.includes(m.curso))
     .map(m => m.nivel))].sort((a, b) => a - b);
   const nivelesObjetivo = nivelesPendientes.slice(0, 2);
 
-  // Materias candidatas de esos niveles y con prerequisitos cumplidos
   const disponibles = materias.filter(m =>
     nivelesObjetivo.includes(m.nivel) &&
     !tachadas.includes(m.curso) &&
     (m.prerequisitos || []).every(req => tachadas.includes(req))
   );
 
-  // Generar combinaciones posibles hasta 18 créditos
   const combinaciones = generarCombinaciones(disponibles, 18);
   const evaluadas = combinaciones.map(combo => {
     const peso = combo.reduce((sum, mat) => {
@@ -148,7 +147,6 @@ function actualizarPlanificador() {
 
   evaluadas.sort((a, b) => b.peso - a.peso || b.creditos - a.creditos);
 
-  // Mostrar 2 mejores combinaciones
   [0, 1].forEach(i => {
     const pack = evaluadas[i];
     if (!pack) return;
@@ -187,3 +185,14 @@ function generarCombinaciones(lista, maxCreditos) {
   backtrack(0, [], 0);
   return resultado;
 }
+
+// --------------------------
+// Exportar como PDF
+// --------------------------
+exportarBtn?.addEventListener("click", () => {
+  window.print();
+});
+
+limpiarBtn?.addEventListener("click", () => {
+  limpiarProgreso();
+});
