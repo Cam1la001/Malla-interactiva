@@ -2,11 +2,13 @@ let materias = [];
 let materiasCompletadas = new Set();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const response = await fetch("malla.json");
+  const response = await fetch("materias.json");
   materias = await response.json();
   cargarProgreso();
   renderMalla();
   actualizarPlanificador();
+  document.getElementById("limpiar-btn").onclick = limpiarProgreso;
+  document.getElementById("exportar-btn").onclick = descargarPDF;
 });
 
 function renderMalla() {
@@ -105,80 +107,97 @@ function limpiarProgreso() {
   actualizarPlanificador();
 }
 
-/* ---------------- Planificador Inteligente ---------------- */
-
+/* -------- Planificador Inteligente -------- */
 function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
-  const totalCreditos = document.getElementById("total-creditos");
-  const segundaSugerencia = document.getElementById("segunda-sugerencia");
-  const creditosAlt = document.getElementById("creditos-alternativos");
-
   contenedor.innerHTML = "";
-  segundaSugerencia.innerHTML = "";
 
-  const disponibles = materias.filter(
-    (m) =>
-      !materiasCompletadas.has(m.codigo) &&
-      puedeTomarse(m) &&
-      m.codigo // que tenga código
+  const disponibles = materias.filter((m) =>
+    !materiasCompletadas.has(m.codigo) && puedeTomarse(m)
   );
 
-  const nivelesPendientes = materias
-    .filter((m) => m.codigo && !materiasCompletadas.has(m.codigo))
-    .map((m) => m.nivel);
-  const nivelesPrioritarios = [...new Set(nivelesPendientes)].sort((a, b) => a - b).slice(0, 2);
+  const niveles = agruparPorNivel(materias);
+  const nivelesFaltantes = Object.keys(niveles)
+    .filter(n => niveles[n].some(m => !materiasCompletadas.has(m.codigo)))
+    .map(n => parseInt(n)).sort((a, b) => a - b);
 
-  const filtradas = disponibles.filter((m) => nivelesPrioritarios.includes(m.nivel));
+  const proximos = nivelesFaltantes.slice(0, 2);
 
-  // Prioriza por cantidad de desbloqueos
-  filtradas.sort((a, b) => contarDesbloqueos(b.codigo) - contarDesbloqueos(a.codigo));
+  const porProximidad = disponibles.map(m => {
+    return {
+      ...m,
+      prioridad: proximos.includes(parseInt(m.nivel)) ? 1 : 2,
+      desbloqueos: contarDesbloqueos(m.codigo)
+    };
+  });
 
-  const primera = seleccionarMateriasHasta18(filtradas);
-  const segunda = seleccionarMateriasHasta18([...filtradas].reverse());
+  porProximidad.sort((a, b) => {
+    if (a.prioridad !== b.prioridad) return a.prioridad - b.prioridad;
+    return b.desbloqueos - a.desbloqueos;
+  });
 
-  renderizarPlan(primera, contenedor);
-  renderizarPlan(segunda, segundaSugerencia);
+  const opciones = generarOpciones(porProximidad, 2);
 
-  totalCreditos.textContent = `Créditos sugeridos: ${sumarCreditos(primera)}`;
-  creditosAlt.textContent = `Créditos alternativos: ${sumarCreditos(segunda)}`;
+  opciones.forEach((opcion, i) => {
+    const grupo = document.createElement("div");
+    grupo.innerHTML = `<h3>Opción ${i + 1}:</h3>`;
+    let sumaCreditos = 0;
+
+    opcion.forEach((mat) => {
+      const div = document.createElement("div");
+      div.className = `materia ${mat.area}`;
+      div.innerHTML = `
+        <div class="info-tabla">
+          <div class="celda small">${mat.codigo}</div>
+          <div class="celda small">${mat.creditos}</div>
+          <div class="celda small">${mat.ht}</div>
+          <div class="celda small">${mat.hpr}</div>
+          <div class="celda small">${mat.curso}</div>
+          <div class="celda small">${mat.area}</div>
+          <div class="celda small">${mat.prerequisitos.join(", ") || "-"}</div>
+        </div>
+        <div class="nombre-materia">${mat.nombre}</div>
+      `;
+      sumaCreditos += mat.creditos;
+      grupo.appendChild(div);
+    });
+
+    const total = document.createElement("div");
+    total.className = "total-creditos";
+    total.textContent = `Total créditos: ${sumaCreditos}/18`;
+    grupo.appendChild(total);
+
+    contenedor.appendChild(grupo);
+  });
 }
 
 function contarDesbloqueos(codigo) {
   return materias.filter((m) => m.prerequisitos.includes(codigo)).length;
 }
 
-function seleccionarMateriasHasta18(lista) {
-  let seleccionadas = [];
-  let sumaCreditos = 0;
-  for (const m of lista) {
-    if (sumaCreditos + m.creditos <= 18) {
-      seleccionadas.push(m);
-      sumaCreditos += m.creditos;
+function generarOpciones(lista, numOpciones) {
+  const opciones = [];
+  for (let i = 0; i < numOpciones; i++) {
+    const seleccionadas = [];
+    let suma = 0;
+    const usados = new Set();
+
+    for (const m of lista) {
+      if (!usados.has(m.codigo) && suma + m.creditos <= 18) {
+        seleccionadas.push(m);
+        usados.add(m.codigo);
+        suma += m.creditos;
+      }
     }
+
+    // Reordenar la lista para que la siguiente opción sea distinta
+    lista.push(lista.shift());
+    opciones.push(seleccionadas);
   }
-  return seleccionadas;
+  return opciones;
 }
 
-function renderizarPlan(lista, contenedor) {
-  for (const mat of lista) {
-    const div = document.createElement("div");
-    div.className = `materia ${mat.area}`;
-    div.innerHTML = `
-      <div class="info-tabla">
-        <div class="celda small">${mat.codigo}</div>
-        <div class="celda small">${mat.creditos}</div>
-        <div class="celda small">${mat.ht}</div>
-        <div class="celda small">${mat.hpr}</div>
-        <div class="celda small">${mat.curso}</div>
-        <div class="celda small">${mat.area}</div>
-        <div class="celda small">🔓 ${contarDesbloqueos(mat.codigo)} desbloqueos</div>
-      </div>
-      <div class="nombre-materia">${mat.nombre}</div>
-    `;
-    contenedor.appendChild(div);
-  }
-}
-
-function sumarCreditos(lista) {
-  return lista.reduce((acc, m) => acc + m.creditos, 0);
+/* -------- Exportar como PDF -------- */
+function descargarPDF() {
+  window.print();
 }
