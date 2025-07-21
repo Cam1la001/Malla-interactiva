@@ -218,5 +218,182 @@
     "nivel": 3,
     "area": "IMEC",
     "prerequisitos": []
+  },
+  [
+  {
+    "codigo": "4A",
+    "nombre": "Ecuaciones Diferenciales",
+    "curso": "CBAS-M06A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 4,
+    "area": "CBAS",
+    "prerequisitos": ["3B"]
+  },
+  {
+    "codigo": "4B",
+    "nombre": "Electromagnetismo",
+    "curso": "CBAS-F04A",
+    "creditos": 4,
+    "ht": 4,
+    "hpr": 1,
+    "nivel": 4,
+    "area": "CBAS",
+    "prerequisitos": ["3D"]
+  },
+  {
+    "codigo": "4C",
+    "nombre": "Sistemas Digitales II",
+    "curso": "IETR-F03A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 4,
+    "area": "IETR",
+    "prerequisitos": ["3E"]
+  },
+  {
+    "codigo": "4D",
+    "nombre": "Dinámica",
+    "curso": "IMEC-D04A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 4,
+    "area": "IMEC",
+    "prerequisitos": ["3F"]
+  },
+  {
+    "codigo": "4E",
+    "nombre": "Materiales de Ingeniería",
+    "curso": "IMEC-D05A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 4,
+    "area": "IMEC",
+    "prerequisitos": ["3F"]
+  },
+  {
+    "codigo": "4F",
+    "nombre": "Medición e Instrumentación",
+    "curso": "IMTR-M02A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 4,
+    "area": "IMTR",
+    "prerequisitos": ["3E"]
+  },
+  {
+    "codigo": "5A",
+    "nombre": "Sistemas de Control I",
+    "curso": "IMTR-M03A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 5,
+    "area": "IMTR",
+    "prerequisitos": ["4F"]
+  },
+  {
+    "codigo": "5B",
+    "nombre": "Electrónica Analógica",
+    "curso": "IETR-F04A",
+    "creditos": 4,
+    "ht": 3,
+    "hpr": 2,
+    "nivel": 5,
+    "area": "IETR",
+    "prerequisitos": ["4C"]
+  },
+  {
+    "codigo": "5C",
+    "nombre": "Mecánica de Materiales",
+    "curso": "IMEC-D06A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 5,
+    "area": "IMEC",
+    "prerequisitos": ["4D", "4E"]
+  },
+  {
+    "codigo": "5D",
+    "nombre": "Análisis de Señales",
+    "curso": "IMTR-M04A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 5,
+    "area": "IMTR",
+    "prerequisitos": ["4F"]
+  },
+  {
+    "codigo": "5E",
+    "nombre": "Procesamiento Digital de Señales",
+    "curso": "IMTR-M05A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 5,
+    "area": "IMTR",
+    "prerequisitos": ["5D"]
+  },
+  {
+    "codigo": "6A",
+    "nombre": "Sistemas de Control II",
+    "curso": "IMTR-M06A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 6,
+    "area": "IMTR",
+    "prerequisitos": ["5A"]
+  },
+  {
+    "codigo": "6B",
+    "nombre": "Electrónica de Potencia",
+    "curso": "IETR-F05A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 6,
+    "area": "IETR",
+    "prerequisitos": ["5B"]
+  },
+  {
+    "codigo": "6C",
+    "nombre": "Diseño Mecánico",
+    "curso": "IMEC-D07A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 6,
+    "area": "IMEC",
+    "prerequisitos": ["5C"]
+  },
+  {
+    "codigo": "6D",
+    "nombre": "Electiva Profesional I",
+    "curso": "IMTR-E01A",
+    "creditos": 2,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 6,
+    "area": "IMTR",
+    "prerequisitos": []
+  },
+  {
+    "codigo": "6E",
+    "nombre": "Modelado y Simulación",
+    "curso": "IMTR-M07A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 2,
+    "nivel": 6,
+    "area": "IMTR",
+    "prerequisitos": ["5A"]
   }
 ]
