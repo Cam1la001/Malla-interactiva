@@ -1,6 +1,6 @@
 [
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Taller de Comprensión Lectora",
     "curso": "CHUM-H01A",
     "creditos": 3,
@@ -8,7 +8,7 @@
     "hpr": 0,
     "nivel": 1,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "1B",
@@ -19,7 +19,7 @@
     "hpr": 0,
     "nivel": 1,
     "area": "CBAS",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "1C",
@@ -30,7 +30,7 @@
     "hpr": 0,
     "nivel": 1,
     "area": "CBAS",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "1D",
@@ -41,10 +41,10 @@
     "hpr": 1,
     "nivel": 1,
     "area": "CBAS",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Desarrollo Universitario",
     "curso": "ECOU-U01A",
     "creditos": 0,
@@ -52,10 +52,10 @@
     "hpr": 0,
     "nivel": 1,
     "area": "ECOU",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Expresión Gráfica",
     "curso": "IMEC-D01A",
     "creditos": 2,
@@ -63,7 +63,7 @@
     "hpr": 0,
     "nivel": 1,
     "area": "IMEC",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "1G",
@@ -74,7 +74,7 @@
     "hpr": 0,
     "nivel": 1,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "1H",
@@ -85,7 +85,7 @@
     "hpr": 2,
     "nivel": 1,
     "area": "ISCO",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "2A",
@@ -96,7 +96,7 @@
     "hpr": 0,
     "nivel": 2,
     "area": "CHUL",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "2B",
@@ -129,7 +129,7 @@
     "hpr": 0,
     "nivel": 2,
     "area": "CBAS",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "2E",
@@ -165,7 +165,7 @@
     "prerequisitos": ["2A"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Taller de escritura académica",
     "curso": "CHUM-H02A",
     "creditos": 3,
@@ -173,7 +173,7 @@
     "hpr": 2,
     "nivel": 3,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "3C",
@@ -184,7 +184,7 @@
     "hpr": 1,
     "nivel": 3,
     "area": "CBAS",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "3D",
@@ -231,7 +231,7 @@
     "prerequisitos": ["3A"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Constitución Política",
     "curso": "CHUM-H03A",
     "creditos": 2,
@@ -239,10 +239,10 @@
     "hpr": 0,
     "nivel": 4,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Fisica Calor y Ondas",
     "curso": "CBAS-F03A",
     "creditos": 4,
@@ -363,7 +363,7 @@
     "prerequisitos": ["5A"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Creatividad y emprendimiento",
     "curso": "AEMP-G04A",
     "creditos": 3,
@@ -371,7 +371,7 @@
     "hpr": 0,
     "nivel": 6,
     "area": "AEMP",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "6C",
@@ -407,7 +407,7 @@
     "prerequisitos": ["4F"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Tecnologia de fabricación",
     "curso": "IMEC-M03A",
     "creditos": 3,
@@ -418,7 +418,7 @@
     "prerequisitos": ["5E"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electiva de humanidades I",
     "curso": "CHUM-HU1A",
     "creditos": 2,
@@ -426,10 +426,10 @@
     "hpr": 0,
     "nivel": 7,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Formulación y Evaluación de PR",
     "curso": "ECON-M12A",
     "creditos": 3,
@@ -440,7 +440,7 @@
     "prerequisitos": ["3C"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Sistemas Embebidos",
     "curso": "IETR-D03A",
     "creditos": 3,
@@ -451,7 +451,7 @@
     "prerequisitos": ["3F"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Sensores e instrumentación",
     "curso": "IMTR-A01A",
     "creditos": 3,
@@ -473,7 +473,7 @@
     "prerequisitos": ["5D","3F","2E"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electiva complementaria I",
     "curso": "IMTR-EC1A",
     "creditos": 3,
@@ -481,10 +481,10 @@
     "hpr": 0,
     "nivel": 7,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Ciudadania Global",
     "curso": "CHUM-H05A",
     "creditos": 2,
@@ -492,10 +492,10 @@
     "hpr": 0,
     "nivel": 8,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electronica de potencia",
     "curso": "IETR-C04A",
     "creditos": 3,
@@ -528,7 +528,7 @@
     "prerequisitos": ["5F","3F","2E"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electiva complementaria II",
     "curso": "IMTR-EC2A",
     "creditos": 3,
@@ -536,7 +536,7 @@
     "hpr": 0,
     "nivel": 8,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
     "codigo": "8F",
@@ -547,10 +547,10 @@
     "hpr": 0,
     "nivel": 8,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Ética",
     "curso": "CHUM-H04A",
     "creditos": 2,
@@ -558,10 +558,10 @@
     "hpr": 0,
     "nivel": 9,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Control Inteligente",
     "curso": "IMTR-A04A",
     "creditos": 3,
@@ -572,7 +572,7 @@
     "prerequisitos": ["6C","8D"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Diseño mecatronico",
     "curso": "IMTR-D01A",
     "creditos": 3,
@@ -583,18 +583,18 @@
     "prerequisitos": ["7E","8D","8C"]
   },
   {
-    "codigo": [],
-    "nombre": "Elctiva complementaria III",
+    "codigo": [""],
+    "nombre": "Electiva complementaria III",
     "curso": "IMTR-EC3A",
     "creditos": 3,
     "ht": 3,
     "hpr": 0,
     "nivel": 9,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Elctiva complementaria IV",
     "curso": "IMTR-EC3A",
     "creditos": 3,
@@ -602,10 +602,10 @@
     "hpr": 0,
     "nivel": 9,
     "area": "IMTR",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Proyecto de Ingenieria II",
     "curso": "IMTR-P02A",
     "creditos": 3,
@@ -616,7 +616,7 @@
     "prerequisitos": ["8F"]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electiva de humaidades II",
     "curso": "CHUM-HU2A",
     "creditos": 2,
@@ -624,10 +624,10 @@
     "hpr": 0,
     "nivel": 10,
     "area": "CHUM",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Electiva empresarial",
     "curso": "IIND-EE1A",
     "creditos": 3,
@@ -635,10 +635,10 @@
     "hpr": 0,
     "nivel": 10,
     "area": "IIND",
-    "prerequisitos": []
+    "prerequisitos": [""]
   },
   {
-    "codigo": [],
+    "codigo": [""],
     "nombre": "Practica profesional",
     "curso": "IMTR-P03A",
     "creditos": 9,
