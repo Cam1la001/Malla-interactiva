@@ -417,7 +417,7 @@
     "area": "IMEC",
     "prerequisitos": ["5E"]
   },
-   {
+  {
     "codigo": [],
     "nombre": "Electiva de humanidades I",
     "curso": "CHUM-HU1A",
@@ -593,7 +593,7 @@
     "area": "IMTR",
     "prerequisitos": []
   },
-    {
+  {
     "codigo": [],
     "nombre": "Elctiva complementaria IV",
     "curso": "IMTR-EC3A",
