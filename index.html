@@ -7,10 +7,25 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Malla de Ingeniería Mecatrónica</h1>
-  <p class="instrucciones">Haz clic en una materia para marcarla como completada. Las que cumplen los prerrequisitos se desbloquean automáticamente.</p>
+  <header>
+    <h1 class="titulo">Malla de Ingeniería Mecatrónica</h1>
+    <p class="instrucciones">Haz clic en una materia para marcarla como completada. Las que cumplen los prerrequisitos se desbloquean automáticamente.</p>
+    <div class="acciones">
+      <button onclick="guardarProgreso()">Guardar progreso</button>
+      <button onclick="limpiarProgreso()">Limpiar progreso</button>
+    </div>
+  </header>
 
-  <div class="grid-malla" id="niveles-container"></div>
+  <main>
+    <div class="grid-malla" id="niveles-container"></div>
+
+    <section class="planificador" id="planificador">
+      <h2>Planificador:</h2>
+      <p><strong>Siguiente nivel sugerido:</strong></p>
+      <div id="sugerencias-materias"></div>
+      <p id="total-creditos">Total créditos: 0/18</p>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
