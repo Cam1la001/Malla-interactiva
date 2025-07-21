@@ -18,6 +18,28 @@ h1 {
   margin-bottom: 1em;
 }
 
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.9em;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #222;
+}
+
 /* ---------- Grid de la malla ---------- */
 .grid-malla {
   display: grid;
@@ -48,6 +70,8 @@ h1 {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.1s ease;
+  min-width: 120px;
+  max-width: 160px;
 }
 
 .materia:hover {
@@ -98,69 +122,8 @@ h1 {
   font-size: 1em;
   color: white;
   text-transform: uppercase;
+  background-color: #333;
 }
-/* ---------- Planificador inteligente ---------- */
-.planificador {
-  background-color: #ffffff;
-  border-top: 2px solid #ccc;
-  padding: 20px;
-  margin-top: 30px;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.05);
-}
-
-.planificador h2 {
-  text-align: center;
-  margin-bottom: 1em;
-  color: #333;
-}
-
-#sugerencias-materias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 1em;
-}
-
-#total-creditos {
-  text-align: center;
-  font-weight: bold;
-  color: #555;
-}
-
-/* ---------- Botones funcionales ---------- */
-.acciones {
-  text-align: center;
-  margin-top: 1em;
-  margin-bottom: 2em;
-}
-
-button {
-  background-color: #4CAF50;
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 8px 16px;
-  margin: 0 6px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-}
-
-button:hover {
-  background-color: #3d9442;
-}
-
-/* ---------- Uniformar tamaño de materias ---------- */
-.materia {
-  min-height: 100px;
-  justify-content: space-between;
-}
-
 
 /* ---------- Colores por área ---------- */
 .CBAS { background-color: #7D9FEF; }      /* Ciencias Básicas */
@@ -175,3 +138,34 @@ button:hover {
 .AEMP { background-color: #7A9E7E; }      /* Emprendimiento */
 .ECON { background-color: #CDA534; }      /* Economía */
 .IIND { background-color: #999999; }      /* Industrial */
+
+/* ---------- Planificador Inteligente ---------- */
+.planificador {
+  margin-top: 40px;
+  background-color: #fff;
+  padding: 1em;
+  border-top: 2px solid #ccc;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.planificador h2, .planificador h3 {
+  text-align: center;
+  margin-bottom: 1em;
+  color: #333;
+}
+
+#sugerencias-materias,
+#segunda-sugerencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+#total-creditos, #creditos-alternativos {
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+}
