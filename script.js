@@ -3,11 +3,14 @@ let materiasCompletadas = new Set();
 let filtroNivelActual = 0;
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Cargar datos
   try {
+    // Cargar datos
     const response = await fetch("malla.json");
     if (!response.ok) throw new Error("Error al cargar el archivo malla.json");
     materias = await response.json();
+    
+    // Validar materias
+    validarMaterias();
     
     // Configurar eventos
     document.getElementById("guardar-btn").addEventListener("click", guardarProgreso);
@@ -25,6 +28,65 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("Error al cargar los datos. Por favor recarga la página.");
   }
 });
+
+function validarMaterias() {
+  const problemas = [];
+  const codigosUnicos = new Set();
+  
+  materias.forEach((materia, index) => {
+    // Validar nombre
+    if (!materia.nombre || materia.nombre.trim() === "") {
+      problemas.push(`Materia en posición ${index} no tiene nombre`);
+    }
+    
+    // Validar y normalizar código
+    const codigo = obtenerCodigoMateria(materia);
+    if (!codigo || codigo.trim() === "") {
+      problemas.push(`Materia "${materia.nombre}" no tiene código válido`);
+    } else if (codigosUnicos.has(codigo)) {
+      problemas.push(`Código duplicado: ${codigo} en "${materia.nombre}"`);
+    } else {
+      codigosUnicos.add(codigo);
+      // Normalizar código en el objeto materia
+      materia.codigo = codigo;
+    }
+    
+    // Validar créditos
+    if (typeof materia.creditos !== 'number' || isNaN(materia.creditos)) {
+      problemas.push(`Materia "${materia.nombre}" no tiene créditos válidos`);
+      materia.creditos = 0; // Valor por defecto
+    }
+    
+    // Validar prerrequisitos
+    if (materia.prerequisitos && !Array.isArray(materia.prerequisitos)) {
+      problemas.push(`Prerrequisitos no son array en "${materia.nombre}"`);
+      materia.prerequisitos = [];
+    }
+  });
+  
+  if (problemas.length > 0) {
+    console.warn("Problemas encontrados en los datos:", problemas);
+    // Opcional: mostrar advertencia al usuario
+    if (problemas.length > 5) {
+      alert(`Se encontraron ${problemas.length} problemas en los datos. Ver la consola para detalles.`);
+    }
+  }
+}
+
+function obtenerCodigoMateria(materia) {
+  if (!materia.codigo) {
+    // Generar código basado en nombre si no existe
+    return materia.nombre
+      .replace(/\s+/g, '')
+      .substring(0, 8)
+      .toUpperCase();
+  }
+  if (Array.isArray(materia.codigo)) {
+    return materia.codigo[0]?.toString().trim() || 
+           materia.nombre.replace(/\s+/g, '').substring(0, 8).toUpperCase();
+  }
+  return materia.codigo.toString().trim();
+}
 
 function aplicarFiltroNivel() {
   filtroNivelActual = parseInt(document.getElementById("filtro-nivel").value) || 0;
@@ -69,18 +131,11 @@ function renderMalla() {
   }
 }
 
-function obtenerCodigoMateria(materia) {
-  if (Array.isArray(materia.codigo)) {
-    return materia.codigo.join(",") || "";
-  }
-  return materia.codigo?.toString() || "";
-}
-
 function crearBloqueMateria(materia) {
   const bloque = document.createElement("div");
   bloque.className = `materia ${materia.area}`;
   
-  // Obtener código de materia (manejar casos edge)
+  // Obtener código de materia
   const codigoMateria = obtenerCodigoMateria(materia);
   
   // Configurar estados
@@ -91,13 +146,24 @@ function crearBloqueMateria(materia) {
   }
 
   // Configurar evento de clic
-  bloque.addEventListener("click", function(e) {
+  bloque.addEventListener("click", function() {
     // Solo materias con código pueden marcarse
-    if (!codigoMateria) return;
+    if (!codigoMateria) {
+      console.warn("Intento de marcar materia sin código:", materia.nombre);
+      return;
+    }
     
     // Verificar si está bloqueada
     if (this.classList.contains("bloqueada")) {
-      console.log("Materia bloqueada:", materia.nombre);
+      const faltantes = (materia.prerequisitos || []).filter(pr => 
+        !materiasCompletadas.has(pr.toString())
+      );
+      
+      if (faltantes.length > 0) {
+        alert(`Para tomar "${materia.nombre}" necesitas completar:\n${faltantes.join("\n")}`);
+      } else {
+        alert(`"${materia.nombre}" no se puede marcar. Falta información de prerrequisitos.`);
+      }
       return;
     }
     
@@ -110,7 +176,6 @@ function crearBloqueMateria(materia) {
       this.classList.add("tachada");
     }
     
-    // Actualizar todo
     guardarProgreso();
     actualizarPlanificador();
     actualizarResumenProgreso();
@@ -123,7 +188,7 @@ function crearBloqueMateria(materia) {
     <div class="celda">${materia.creditos} CR</div>
     <div class="celda">${materia.ht} HT</div>
     <div class="celda">${materia.hpr} HP</div>
-    <div class="celda">${materia.curso}</div>
+    <div class="celda">${materia.curso || codigoMateria}</div>
   `;
 
   const nombre = document.createElement("div");
@@ -133,7 +198,6 @@ function crearBloqueMateria(materia) {
   // Tooltip con prerrequisitos
   if (materia.prerequisitos?.length > 0) {
     bloque.title = `Prerrequisitos: ${materia.prerequisitos.join(", ")}`;
-    bloque.style.cursor = "pointer";
   }
 
   bloque.appendChild(tabla);
@@ -155,6 +219,9 @@ function agruparPorNivel(materias) {
 function puedeTomarse(materia) {
   const codigoMateria = obtenerCodigoMateria(materia);
   if (!codigoMateria) return false;
+  
+  // Si ya está completada, se puede desmarcar
+  if (materiasCompletadas.has(codigoMateria)) return true;
   
   // Verificar prerrequisitos
   const prerequisitos = materia.prerequisitos || [];
