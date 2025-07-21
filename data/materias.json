@@ -416,5 +416,71 @@
     "nivel": 6,
     "area": "IMEC",
     "prerequisitos": ["5E"]
+  },
+   {
+    "codigo": [],
+    "nombre": "Electiva de humanidades I",
+    "curso": "CHUM-HU1A",
+    "creditos": 2,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 7,
+    "area": "CHUM",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Formulación y Evaluación de PR",
+    "curso": "ECON-M12A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 7,
+    "area": "ECON",
+    "prerequisitos": ["3C"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Sistemas Embebidos",
+    "curso": "IETR-D03A",
+    "creditos": 3,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 7,
+    "area": "IETR",
+    "prerequisitos": ["3F"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Sensores e instrumentación",
+    "curso": "IMTR-A01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 7,
+    "area": "IMTR",
+    "prerequisitos": ["6D","6E","5B"]
+  },
+  {
+    "codigo": "7E",
+    "nombre": "Sistemas automaticos de produción",
+    "curso": "IMTR-A02A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 7,
+    "area": "IMTR",
+    "prerequisitos": ["5D","3F","2E"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Electiva complementaria I",
+    "curso": "IMTR-EC1A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 7,
+    "area": "IMTR",
+    "prerequisitos": []
   }
 ]
