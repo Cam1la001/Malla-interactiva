@@ -352,69 +352,69 @@
     "prerequisitos": ["2F","4D"]
   },
   {
-    "codigo": "5E",
-    "nombre": "Procesamiento Digital de Señales",
-    "curso": "IMTR-M05A",
-    "creditos": 3,
-    "ht": 2,
-    "hpr": 2,
-    "nivel": 6,
-    "area": "IMTR",
-    "prerequisitos": ["5D"]
-  },
-  {
     "codigo": "6A",
-    "nombre": "Sistemas de Control II",
-    "curso": "IMTR-M06A",
-    "creditos": 3,
-    "ht": 2,
-    "hpr": 2,
+    "nombre": "Lengua extranjera V",
+    "curso": "CHUL-LE5A",
+    "creditos": 2,
+    "ht": 4,
+    "hpr": 0,
     "nivel": 6,
-    "area": "IMTR",
+    "area": "CHUL",
     "prerequisitos": ["5A"]
   },
   {
-    "codigo": "6B",
-    "nombre": "Electrónica de Potencia",
-    "curso": "IETR-F05A",
+    "codigo": [],
+    "nombre": "Creatividad y emprendimiento",
+    "curso": "AEMP-G04A",
     "creditos": 3,
-    "ht": 2,
-    "hpr": 2,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 6,
+    "area": "AEMP",
+    "prerequisitos": []
+  },
+  {
+    "codigo": "6C",
+    "nombre": "Contro I",
+    "curso": "IETR-C01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
     "nivel": 6,
     "area": "IETR",
     "prerequisitos": ["5B"]
   },
   {
-    "codigo": "6C",
-    "nombre": "Diseño Mecánico",
-    "curso": "IMEC-D07A",
+    "codigo": "6D",
+    "nombre": "Electronica I",
+    "curso": "IETR-F04A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 6,
+    "area": "IETR",
+    "prerequisitos": ["4E"]
+  },
+  {
+    "codigo": "6E",
+    "nombre": "Resistencia de Materiales",
+    "curso": "IMEC-D06A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 6,
+    "area": "IMEC",
+    "prerequisitos": ["4F"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Tecnologia de fabricación",
+    "curso": "IMEC-M03A",
     "creditos": 3,
     "ht": 3,
     "hpr": 1,
     "nivel": 6,
     "area": "IMEC",
-    "prerequisitos": ["5C"]
-  },
-  {
-    "codigo": "6D",
-    "nombre": "Electiva Profesional I",
-    "curso": "IMTR-E01A",
-    "creditos": 2,
-    "ht": 2,
-    "hpr": 0,
-    "nivel": 6,
-    "area": "IMTR",
-    "prerequisitos": []
-  },
-  {
-    "codigo": "6E",
-    "nombre": "Modelado y Simulación",
-    "curso": "IMTR-M07A",
-    "creditos": 3,
-    "ht": 2,
-    "hpr": 2,
-    "nivel": 6,
-    "area": "IMTR",
-    "prerequisitos": ["5A"]
+    "prerequisitos": ["5E"]
   }
 ]
