@@ -1,4 +1,3 @@
-
 let materias = [];
 let materiasCompletadas = new Set();
 
@@ -111,27 +110,57 @@ function limpiarProgreso() {
 function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
   const totalCreditos = document.getElementById("total-creditos");
-  contenedor.innerHTML = "";
+  const segundaSugerencia = document.getElementById("segunda-sugerencia");
+  const creditosAlt = document.getElementById("creditos-alternativos");
 
-  const disponibles = materias.filter((m) =>
-    !materiasCompletadas.has(m.codigo) &&
-    puedeTomarse(m) &&
-    m.codigo // que tenga código
+  contenedor.innerHTML = "";
+  segundaSugerencia.innerHTML = "";
+
+  const disponibles = materias.filter(
+    (m) =>
+      !materiasCompletadas.has(m.codigo) &&
+      puedeTomarse(m) &&
+      m.codigo // que tenga código
   );
 
-  // Prioriza las materias que desbloquean más (más dependientes)
-  disponibles.sort((a, b) => contarDesbloqueos(b.codigo) - contarDesbloqueos(a.codigo));
+  const nivelesPendientes = materias
+    .filter((m) => m.codigo && !materiasCompletadas.has(m.codigo))
+    .map((m) => m.nivel);
+  const nivelesPrioritarios = [...new Set(nivelesPendientes)].sort((a, b) => a - b).slice(0, 2);
 
+  const filtradas = disponibles.filter((m) => nivelesPrioritarios.includes(m.nivel));
+
+  // Prioriza por cantidad de desbloqueos
+  filtradas.sort((a, b) => contarDesbloqueos(b.codigo) - contarDesbloqueos(a.codigo));
+
+  const primera = seleccionarMateriasHasta18(filtradas);
+  const segunda = seleccionarMateriasHasta18([...filtradas].reverse());
+
+  renderizarPlan(primera, contenedor);
+  renderizarPlan(segunda, segundaSugerencia);
+
+  totalCreditos.textContent = `Créditos sugeridos: ${sumarCreditos(primera)}`;
+  creditosAlt.textContent = `Créditos alternativos: ${sumarCreditos(segunda)}`;
+}
+
+function contarDesbloqueos(codigo) {
+  return materias.filter((m) => m.prerequisitos.includes(codigo)).length;
+}
+
+function seleccionarMateriasHasta18(lista) {
   let seleccionadas = [];
   let sumaCreditos = 0;
-  for (const m of disponibles) {
+  for (const m of lista) {
     if (sumaCreditos + m.creditos <= 18) {
       seleccionadas.push(m);
       sumaCreditos += m.creditos;
     }
   }
+  return seleccionadas;
+}
 
-  for (const mat of seleccionadas) {
+function renderizarPlan(lista, contenedor) {
+  for (const mat of lista) {
     const div = document.createElement("div");
     div.className = `materia ${mat.area}`;
     div.innerHTML = `
@@ -142,16 +171,14 @@ function actualizarPlanificador() {
         <div class="celda small">${mat.hpr}</div>
         <div class="celda small">${mat.curso}</div>
         <div class="celda small">${mat.area}</div>
-        <div class="celda small">${mat.prerequisitos.join(", ") || "-"}</div>
+        <div class="celda small">🔓 ${contarDesbloqueos(mat.codigo)} desbloqueos</div>
       </div>
       <div class="nombre-materia">${mat.nombre}</div>
     `;
     contenedor.appendChild(div);
   }
-
-  totalCreditos.textContent = `Créditos sugeridos: ${sumaCreditos}`;
 }
 
-function contarDesbloqueos(codigo) {
-  return materias.filter((m) => m.prerequisitos.includes(codigo)).length;
+function sumarCreditos(lista) {
+  return lista.reduce((acc, m) => acc + m.creditos, 0);
 }
