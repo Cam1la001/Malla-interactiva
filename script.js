@@ -6,11 +6,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Cargar datos
     const response = await fetch("malla.json");
-    if (!response.ok) throw new Error("Error al cargar el archivo malla.json");
+    if (!response.ok) throw new Error("Error al cargar malla.json");
     materias = await response.json();
     
-    // Validar materias
-    validarMaterias();
+    // Normalizar códigos y verificar prerrequisitos
+    normalizarCodigosMaterias();
+    verificarPrerrequisitos();
     
     // Configurar eventos
     document.getElementById("guardar-btn").addEventListener("click", guardarProgreso);
@@ -25,67 +26,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     actualizarResumenProgreso();
   } catch (error) {
     console.error("Error inicial:", error);
-    alert("Error al cargar los datos. Por favor recarga la página.");
+    alert("Error al cargar los datos. Ver consola para detalles.");
   }
 });
 
-function validarMaterias() {
-  const problemas = [];
-  const codigosUnicos = new Set();
-  
-  materias.forEach((materia, index) => {
-    // Validar nombre
-    if (!materia.nombre || materia.nombre.trim() === "") {
-      problemas.push(`Materia en posición ${index} no tiene nombre`);
-    }
+// Normaliza todos los códigos en las materias y prerrequisitos
+function normalizarCodigosMaterias() {
+  materias.forEach(materia => {
+    // Normalizar código principal
+    materia.codigoNormalizado = normalizarCodigo(materia.codigo || materia.nombre);
     
-    // Validar y normalizar código
-    const codigo = obtenerCodigoMateria(materia);
-    if (!codigo || codigo.trim() === "") {
-      problemas.push(`Materia "${materia.nombre}" no tiene código válido`);
-    } else if (codigosUnicos.has(codigo)) {
-      problemas.push(`Código duplicado: ${codigo} en "${materia.nombre}"`);
+    // Normalizar prerrequisitos
+    if (materia.prerequisitos && Array.isArray(materia.prerequisitos)) {
+      materia.prerequisitosNormalizados = materia.prerequisitos.map(normalizarCodigo).filter(Boolean);
     } else {
-      codigosUnicos.add(codigo);
-      // Normalizar código en el objeto materia
-      materia.codigo = codigo;
-    }
-    
-    // Validar créditos
-    if (typeof materia.creditos !== 'number' || isNaN(materia.creditos)) {
-      problemas.push(`Materia "${materia.nombre}" no tiene créditos válidos`);
-      materia.creditos = 0; // Valor por defecto
-    }
-    
-    // Validar prerrequisitos
-    if (materia.prerequisitos && !Array.isArray(materia.prerequisitos)) {
-      problemas.push(`Prerrequisitos no son array en "${materia.nombre}"`);
-      materia.prerequisitos = [];
+      materia.prerequisitosNormalizados = [];
     }
   });
-  
-  if (problemas.length > 0) {
-    console.warn("Problemas encontrados en los datos:", problemas);
-    // Opcional: mostrar advertencia al usuario
-    if (problemas.length > 5) {
-      alert(`Se encontraron ${problemas.length} problemas en los datos. Ver la consola para detalles.`);
-    }
+}
+
+// Verifica que todos los prerrequisitos existan
+function verificarPrerrequisitos() {
+  const codigosExistentes = new Set(materias.map(m => m.codigoNormalizado));
+  let problemas = 0;
+
+  materias.forEach(materia => {
+    materia.prerequisitosNormalizados.forEach(prereq => {
+      if (!codigosExistentes.has(prereq)) {
+        console.warn(`Prerrequisito no encontrado: "${prereq}" en "${materia.nombre}"`);
+        problemas++;
+      }
+    });
+  });
+
+  if (problemas > 0) {
+    console.warn(`Total de problemas con prerrequisitos: ${problemas}`);
   }
 }
 
-function obtenerCodigoMateria(materia) {
-  if (!materia.codigo) {
-    // Generar código basado en nombre si no existe
-    return materia.nombre
-      .replace(/\s+/g, '')
-      .substring(0, 8)
-      .toUpperCase();
-  }
-  if (Array.isArray(materia.codigo)) {
-    return materia.codigo[0]?.toString().trim() || 
-           materia.nombre.replace(/\s+/g, '').substring(0, 8).toUpperCase();
-  }
-  return materia.codigo.toString().trim();
+// Normaliza un código (elimina espacios, caracteres especiales, etc.)
+function normalizarCodigo(codigo) {
+  if (!codigo) return '';
+  return codigo.toString()
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
 }
 
 function aplicarFiltroNivel() {
@@ -116,11 +101,9 @@ function renderMalla() {
     columna.appendChild(titulo);
 
     // Ordenar materias por código
-    const materiasNivel = niveles[nivel].sort((a, b) => {
-      const codA = obtenerCodigoMateria(a);
-      const codB = obtenerCodigoMateria(b);
-      return codA.localeCompare(codB);
-    });
+    const materiasNivel = niveles[nivel].sort((a, b) => 
+      a.codigoNormalizado.localeCompare(b.codigoNormalizado)
+    );
 
     materiasNivel.forEach((materia) => {
       const bloque = crearBloqueMateria(materia);
@@ -135,11 +118,8 @@ function crearBloqueMateria(materia) {
   const bloque = document.createElement("div");
   bloque.className = `materia ${materia.area}`;
   
-  // Obtener código de materia
-  const codigoMateria = obtenerCodigoMateria(materia);
-  
   // Configurar estados
-  if (codigoMateria && materiasCompletadas.has(codigoMateria)) {
+  if (materiasCompletadas.has(materia.codigoNormalizado)) {
     bloque.classList.add("tachada");
   } else if (!puedeTomarse(materia)) {
     bloque.classList.add("bloqueada");
@@ -147,36 +127,26 @@ function crearBloqueMateria(materia) {
 
   // Configurar evento de clic
   bloque.addEventListener("click", function() {
-    // Solo materias con código pueden marcarse
-    if (!codigoMateria) {
-      console.warn("Intento de marcar materia sin código:", materia.nombre);
-      return;
-    }
-    
-    // Verificar si está bloqueada
-    if (this.classList.contains("bloqueada")) {
-      const faltantes = (materia.prerequisitos || []).filter(pr => 
-        !materiasCompletadas.has(pr.toString())
-      );
-      
-      if (faltantes.length > 0) {
-        alert(`Para tomar "${materia.nombre}" necesitas completar:\n${faltantes.join("\n")}`);
-      } else {
-        alert(`"${materia.nombre}" no se puede marcar. Falta información de prerrequisitos.`);
-      }
-      return;
-    }
-    
     // Alternar estado
-    if (materiasCompletadas.has(codigoMateria)) {
-      materiasCompletadas.delete(codigoMateria);
-      this.classList.remove("tachada");
+    if (materiasCompletadas.has(materia.codigoNormalizado)) {
+      materiasCompletadas.delete(materia.codigoNormalizado);
     } else {
-      materiasCompletadas.add(codigoMateria);
-      this.classList.add("tachada");
+      // Verificar si se puede tomar
+      if (!puedeTomarse(materia)) {
+        const faltantes = materia.prerequisitosNormalizados
+          .filter(p => !materiasCompletadas.has(p));
+        
+        if (faltantes.length > 0) {
+          alert(`Para tomar "${materia.nombre}" necesitas completar:\n${faltantes.join("\n")}`);
+        }
+        return;
+      }
+      materiasCompletadas.add(materia.codigoNormalizado);
     }
     
+    // Guardar y actualizar
     guardarProgreso();
+    renderMalla(); // Vuelve a renderizar toda la malla
     actualizarPlanificador();
     actualizarResumenProgreso();
   });
@@ -188,7 +158,7 @@ function crearBloqueMateria(materia) {
     <div class="celda">${materia.creditos} CR</div>
     <div class="celda">${materia.ht} HT</div>
     <div class="celda">${materia.hpr} HP</div>
-    <div class="celda">${materia.curso || codigoMateria}</div>
+    <div class="celda">${materia.curso || materia.codigoNormalizado}</div>
   `;
 
   const nombre = document.createElement("div");
@@ -196,14 +166,27 @@ function crearBloqueMateria(materia) {
   nombre.textContent = materia.nombre;
 
   // Tooltip con prerrequisitos
-  if (materia.prerequisitos?.length > 0) {
-    bloque.title = `Prerrequisitos: ${materia.prerequisitos.join(", ")}`;
+  if (materia.prerequisitosNormalizados.length > 0) {
+    bloque.title = `Prerrequisitos: ${materia.prerequisitosNormalizados.join(", ")}`;
   }
 
   bloque.appendChild(tabla);
   bloque.appendChild(nombre);
 
   return bloque;
+}
+
+function puedeTomarse(materia) {
+  // Si ya está completada, se puede desmarcar
+  if (materiasCompletadas.has(materia.codigoNormalizado)) return true;
+  
+  // Si no tiene prerrequisitos, se puede tomar
+  if (materia.prerequisitosNormalizados.length === 0) return true;
+  
+  // Verificar todos los prerrequisitos
+  return materia.prerequisitosNormalizados.every(prereq => 
+    materiasCompletadas.has(prereq)
+  );
 }
 
 function agruparPorNivel(materias) {
@@ -216,26 +199,10 @@ function agruparPorNivel(materias) {
   return niveles;
 }
 
-function puedeTomarse(materia) {
-  const codigoMateria = obtenerCodigoMateria(materia);
-  if (!codigoMateria) return false;
-  
-  // Si ya está completada, se puede desmarcar
-  if (materiasCompletadas.has(codigoMateria)) return true;
-  
-  // Verificar prerrequisitos
-  const prerequisitos = materia.prerequisitos || [];
-  return prerequisitos.every(pr => {
-    const codigoPr = pr?.toString()?.trim() || "";
-    return codigoPr === "" || materiasCompletadas.has(codigoPr);
-  });
-}
-
 function guardarProgreso() {
-  const codigosCompletados = Array.from(materiasCompletadas).filter(c => c && c.trim() !== "");
+  const codigosCompletados = Array.from(materiasCompletadas);
   try {
     localStorage.setItem("materiasCompletadas", JSON.stringify(codigosCompletados));
-    console.log("Progreso guardado:", codigosCompletados);
   } catch (e) {
     console.error("Error al guardar progreso:", e);
   }
@@ -246,11 +213,7 @@ function cargarProgreso() {
     const data = localStorage.getItem("materiasCompletadas");
     if (data) {
       const codigos = JSON.parse(data);
-      // Filtrar solo códigos válidos (strings no vacíos)
-      materiasCompletadas = new Set(codigos.filter(c => 
-        c && typeof c === 'string' && c.trim().length > 0
-      ));
-      console.log("Progreso cargado:", materiasCompletadas);
+      materiasCompletadas = new Set(codigos.filter(c => typeof c === 'string' && c.length > 0));
     }
   } catch (e) {
     console.error("Error al cargar progreso:", e);
@@ -260,21 +223,16 @@ function cargarProgreso() {
 
 function limpiarProgreso() {
   if (confirm("¿Estás seguro de que quieres borrar todo tu progreso?")) {
-    try {
-      localStorage.removeItem("materiasCompletadas");
-      materiasCompletadas.clear();
-      renderMalla();
-      actualizarPlanificador();
-      actualizarResumenProgreso();
-      console.log("Progreso limpiado");
-    } catch (e) {
-      console.error("Error al limpiar progreso:", e);
-    }
+    localStorage.removeItem("materiasCompletadas");
+    materiasCompletadas.clear();
+    renderMalla();
+    actualizarPlanificador();
+    actualizarResumenProgreso();
   }
 }
 
 function actualizarResumenProgreso() {
-  const totalMaterias = materias.filter(m => obtenerCodigoMateria(m) !== "").length;
+  const totalMaterias = materias.filter(m => m.codigoNormalizado).length;
   const completadas = materiasCompletadas.size;
   const porcentaje = totalMaterias > 0 ? Math.round((completadas / totalMaterias) * 100) : 0;
   
@@ -284,10 +242,7 @@ function actualizarResumenProgreso() {
   
   // Calcular créditos completados
   const creditosCompletados = materias
-    .filter(m => {
-      const codigo = obtenerCodigoMateria(m);
-      return codigo && materiasCompletadas.has(codigo);
-    })
+    .filter(m => materiasCompletadas.has(m.codigoNormalizado))
     .reduce((sum, m) => sum + (m.creditos || 0), 0);
   
   // Actualizar textos
@@ -300,91 +255,63 @@ function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
   contenedor.innerHTML = "";
 
-  // Filtrar materias disponibles (con código, no completadas y que se pueden tomar)
-  const disponibles = materias.filter(m => {
-    const codigo = obtenerCodigoMateria(m);
-    return codigo && 
-           !materiasCompletadas.has(codigo) && 
-           puedeTomarse(m);
-  });
+  // Filtrar materias disponibles
+  const disponibles = materias.filter(m => 
+    !materiasCompletadas.has(m.codigoNormalizado) && 
+    puedeTomarse(m)
+  );
 
-  // Si no hay materias disponibles
   if (disponibles.length === 0) {
     contenedor.innerHTML = `<p class="no-sugerencias">¡Felicidades! Has completado todas las materias disponibles.</p>`;
     return;
   }
 
   // Calcular peso para cada materia
-  const materiasConPeso = disponibles.map(m => {
-    const codigo = obtenerCodigoMateria(m);
-    return {
-      ...m,
-      peso: calcularPesoMateria(m)
-    };
-  });
+  const materiasConPeso = disponibles.map(m => ({
+    ...m,
+    peso: calcularPesoMateria(m)
+  })).sort((a, b) => b.peso - a.peso);
 
-  // Ordenar por peso descendente
-  materiasConPeso.sort((a, b) => b.peso - a.peso);
-
-  // Generar dos opciones distintas
+  // Generar opciones
   const opciones = [
     generarOpcionInscripcion([...materiasConPeso]),
     generarOpcionInscripcion([...materiasConPeso].reverse())
   ];
 
-  // Mostrar las opciones
-  opciones.forEach((opcion, index) => {
+  // Mostrar opciones
+  opciones.forEach((opcion, i) => {
     const grupo = document.createElement("div");
     grupo.className = "opcion-planificador";
-    grupo.innerHTML = `<h3>Opción ${index + 1}:</h3>`;
+    grupo.innerHTML = `<h3>Opción ${i + 1}:</h3>`;
     
     let creditosTotales = 0;
     
     opcion.forEach(materia => {
       creditosTotales += materia.creditos;
-      
-      const divMateria = document.createElement("div");
-      divMateria.className = `materia-sugerida ${materia.area}`;
-      divMateria.innerHTML = `
-        <span>${materia.nombre}</span>
-        <span>${materia.creditos} cr. (Nivel ${materia.nivel})</span>
+      grupo.innerHTML += `
+        <div class="materia-sugerida ${materia.area}">
+          <span>${materia.nombre}</span>
+          <span>${materia.creditos} cr. (Nivel ${materia.nivel})</span>
+        </div>
       `;
-      
-      grupo.appendChild(divMateria);
     });
     
-    // Mostrar total de créditos
-    const divTotal = document.createElement("div");
-    divTotal.className = "total-creditos";
-    divTotal.textContent = `Total: ${creditosTotales}/18 créditos`;
-    grupo.appendChild(divTotal);
-    
+    grupo.innerHTML += `<div class="total-creditos">Total: ${creditosTotales}/18 créditos</div>`;
     contenedor.appendChild(grupo);
   });
 }
 
 function calcularPesoMateria(materia) {
-  const codigo = obtenerCodigoMateria(materia);
-  const creditos = materia.creditos || 0;
-  const nivel = materia.nivel || 10;
-  
-  // 1. Materias que desbloquean más materias tienen mayor peso
-  const desbloqueos = contarDesbloqueos(codigo);
-  
-  // 2. Materias de niveles más bajos tienen mayor peso
-  const pesoNivel = 1 / nivel;
-  
-  // 3. Materias con más créditos tienen mayor peso
-  const pesoCreditos = creditos / 4;
-  
-  // Peso total (puedes ajustar estos factores)
-  return (desbloqueos * 2) + (pesoNivel * 3) + (pesoCreditos * 1);
+  const desbloqueos = contarDesbloqueos(materia.codigoNormalizado);
+  const pesoNivel = 1 / (materia.nivel || 10);
+  const pesoCreditos = (materia.creditos || 0) / 4;
+  return (desbloqueos * 2) + (pesoNivel * 3) + pesoCreditos;
 }
 
 function contarDesbloqueos(codigo) {
   return materias.filter(m => 
-    m.prerequisitos?.includes(codigo) && 
-    !materiasCompletadas.has(obtenerCodigoMateria(m))
+    m.prerequisitosNormalizados.includes(codigo) && 
+    !materiasCompletadas.has(m.codigoNormalizado)
   ).length;
 }
 
@@ -394,19 +321,13 @@ function generarOpcionInscripcion(materiasOrdenadas) {
   const materiasConsideradas = new Set();
   
   for (const materia of materiasOrdenadas) {
-    const codigo = obtenerCodigoMateria(materia);
-    
-    // Saltar si ya se consideró esta materia o excede los créditos
-    if (materiasConsideradas.has(codigo) || 
-        creditosAcumulados + materia.creditos > 18) {
-      continue;
-    }
+    if (materiasConsideradas.has(materia.codigoNormalizado) || 
+        creditosAcumulados + materia.creditos > 18) continue;
     
     seleccionadas.push(materia);
     creditosAcumulados += materia.creditos;
-    materiasConsideradas.add(codigo);
+    materiasConsideradas.add(materia.codigoNormalizado);
     
-    // Si llegamos cerca al límite, salir
     if (creditosAcumulados >= 15) break;
   }
   
@@ -417,51 +338,14 @@ function generarOpcionInscripcion(materiasOrdenadas) {
 function descargarPDF() {
   const element = document.createElement("div");
   element.className = "pdf-container";
-  element.style.padding = "20px";
-  
-  // Crear contenido para el PDF
-  element.innerHTML = `
-    <h1 style="text-align: center; color: #2c3e50;">Planificación Académica - Ingeniería Mecatrónica</h1>
-    <div class="pdf-progreso" style="margin-bottom: 20px;">
-      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Progreso Actual</h2>
-      <p>${document.getElementById("texto-progreso").textContent}</p>
-      <p>${document.getElementById("total-creditos").textContent}</p>
-      <p>${document.getElementById("total-materias").textContent}</p>
-    </div>
-    <div class="pdf-malla" id="pdf-malla" style="margin-bottom: 30px;"></div>
-    <div class="pdf-sugerencias">
-      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Sugerencias de Inscripción</h2>
-      <div id="pdf-sugerencias"></div>
-    </div>
-  `;
-  
-  // Clonar la malla actual
-  const mallaClone = document.getElementById("niveles-container").cloneNode(true);
-  mallaClone.style.display = "grid";
-  mallaClone.style.gridTemplateColumns = "repeat(5, 1fr)";
-  mallaClone.style.gap = "10px";
-  element.querySelector("#pdf-malla").appendChild(mallaClone);
-  
-  // Clonar las sugerencias
-  const sugerenciasClone = document.getElementById("sugerencias-materias").cloneNode(true);
-  element.querySelector("#pdf-sugerencias").appendChild(sugerenciasClone);
   
   // Configurar opciones de PDF
   const opt = {
     margin: 10,
     filename: 'planificacion-mecatronica.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2,
-      scrollY: 0,
-      logging: true,
-      useCORS: true
-    },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'portrait' 
-    }
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
   // Generar PDF
