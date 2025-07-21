@@ -99,6 +99,68 @@ h1 {
   color: white;
   text-transform: uppercase;
 }
+/* ---------- Planificador inteligente ---------- */
+.planificador {
+  background-color: #ffffff;
+  border-top: 2px solid #ccc;
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.planificador h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  color: #333;
+}
+
+#sugerencias-materias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+#total-creditos {
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+}
+
+/* ---------- Botones funcionales ---------- */
+.acciones {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+button:hover {
+  background-color: #3d9442;
+}
+
+/* ---------- Uniformar tamaño de materias ---------- */
+.materia {
+  min-height: 100px;
+  justify-content: space-between;
+}
+
 
 /* ---------- Colores por área ---------- */
 .CBAS { background-color: #7D9FEF; }      /* Ciencias Básicas */
