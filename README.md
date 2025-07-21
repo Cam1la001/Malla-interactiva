@@ -1,6 +1,6 @@
 # 📚 Malla Interactiva de Ingeniería Mecatrónica
 
-Malla interactiva de Ingeniería Mecatrónica - Universidad Tecnológica de Bolívar
+Malla interactiva de Ingeniería Mecatrónica 202010 - Universidad Tecnológica de Bolívar
 
 Este proyecto permite visualizar la malla curricular del programa de Ingeniería Mecatrónica de forma interactiva. Puedes marcar las materias que ya cursaste y ver cuáles se desbloquean según sus prerrequisitos.
 
