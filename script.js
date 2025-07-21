@@ -4,14 +4,12 @@ let filtroNivelActual = 0;
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Cargar datos
     const response = await fetch("malla.json");
     if (!response.ok) throw new Error("Error al cargar malla.json");
     materias = await response.json();
     
-    // Normalizar códigos y verificar prerrequisitos
-    normalizarCodigosMaterias();
-    verificarPrerrequisitos();
+    // Procesar prerrequisitos y códigos
+    procesarMaterias();
     
     // Configurar eventos
     document.getElementById("guardar-btn").addEventListener("click", guardarProgreso);
@@ -19,7 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("exportar-btn").addEventListener("click", descargarPDF);
     document.getElementById("aplicar-filtro").addEventListener("click", aplicarFiltroNivel);
     
-    // Inicializar
     cargarProgreso();
     renderMalla();
     actualizarPlanificador();
@@ -30,41 +27,41 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Normaliza todos los códigos en las materias y prerrequisitos
-function normalizarCodigosMaterias() {
-  materias.forEach(materia => {
-    // Normalizar código principal
-    materia.codigoNormalizado = normalizarCodigo(materia.codigo || materia.nombre);
+function procesarMaterias() {
+  // Primera pasada: normalizar códigos y crear mapa de referencia
+  const mapaCodigos = new Map();
+  
+  materias.forEach((materia, index) => {
+    // Normalizar código
+    materia.codigoNormalizado = normalizarCodigo(materia.codigo) || `M${index}`;
     
-    // Normalizar prerrequisitos
-    if (materia.prerequisitos && Array.isArray(materia.prerequisitos)) {
-      materia.prerequisitosNormalizados = materia.prerequisitos.map(normalizarCodigo).filter(Boolean);
-    } else {
-      materia.prerequisitosNormalizados = [];
+    // Verificar unicidad
+    if (mapaCodigos.has(materia.codigoNormalizado)) {
+      console.warn(`Código duplicado: ${materia.codigoNormalizado} en "${materia.nombre}"`);
+      materia.codigoNormalizado = `${materia.codigoNormalizado}-${index}`;
     }
+    mapaCodigos.set(materia.codigoNormalizado, materia);
+    
+    // Asignar ID único
+    materia.idUnico = `materia-${index}`;
   });
-}
-
-// Verifica que todos los prerrequisitos existan
-function verificarPrerrequisitos() {
-  const codigosExistentes = new Set(materias.map(m => m.codigoNormalizado));
-  let problemas = 0;
-
+  
+  // Segunda pasada: procesar prerrequisitos
   materias.forEach(materia => {
-    materia.prerequisitosNormalizados.forEach(prereq => {
-      if (!codigosExistentes.has(prereq)) {
-        console.warn(`Prerrequisito no encontrado: "${prereq}" en "${materia.nombre}"`);
-        problemas++;
-      }
-    });
+    materia.prerequisitosValidos = (materia.prerequisitos || [])
+      .filter(pr => pr && pr !== '') // Eliminar strings vacías
+      .map(normalizarCodigo)
+      .map(codigo => {
+        const encontrado = materias.find(m => normalizarCodigo(m.codigo) === codigo);
+        if (!encontrado) {
+          console.warn(`Prerrequisito no encontrado: "${codigo}" en "${materia.nombre}"`);
+        }
+        return encontrado?.idUnico;
+      })
+      .filter(Boolean); // Eliminar undefined
   });
-
-  if (problemas > 0) {
-    console.warn(`Total de problemas con prerrequisitos: ${problemas}`);
-  }
 }
 
-// Normaliza un código (elimina espacios, caracteres especiales, etc.)
 function normalizarCodigo(codigo) {
   if (!codigo) return '';
   return codigo.toString()
@@ -82,14 +79,11 @@ function renderMalla() {
   const container = document.getElementById("niveles-container");
   container.innerHTML = "";
 
-  // Filtrar materias por nivel si hay filtro activo
   const materiasFiltradas = filtroNivelActual === 0 
     ? materias 
     : materias.filter(m => m.nivel === filtroNivelActual);
 
   const niveles = agruparPorNivel(materiasFiltradas);
-  
-  // Ordenar niveles numéricamente
   const nivelesOrdenados = Object.keys(niveles).sort((a, b) => a - b);
   
   for (const nivel of nivelesOrdenados) {
@@ -100,14 +94,9 @@ function renderMalla() {
     titulo.textContent = `Nivel ${nivel}`;
     columna.appendChild(titulo);
 
-    // Ordenar materias por código
-    const materiasNivel = niveles[nivel].sort((a, b) => 
-      a.codigoNormalizado.localeCompare(b.codigoNormalizado)
-    );
-
-    materiasNivel.forEach((materia) => {
+    niveles[nivel].forEach((materia) => {
       const bloque = crearBloqueMateria(materia);
-      if (bloque) columna.appendChild(bloque);
+      columna.appendChild(bloque);
     });
 
     container.appendChild(columna);
@@ -117,41 +106,16 @@ function renderMalla() {
 function crearBloqueMateria(materia) {
   const bloque = document.createElement("div");
   bloque.className = `materia ${materia.area}`;
+  bloque.dataset.id = materia.idUnico;
   
-  // Configurar estados
-  if (materiasCompletadas.has(materia.codigoNormalizado)) {
+  if (materiasCompletadas.has(materia.idUnico)) {
     bloque.classList.add("tachada");
   } else if (!puedeTomarse(materia)) {
     bloque.classList.add("bloqueada");
   }
 
-  // Configurar evento de clic
-  bloque.addEventListener("click", function() {
-    // Alternar estado
-    if (materiasCompletadas.has(materia.codigoNormalizado)) {
-      materiasCompletadas.delete(materia.codigoNormalizado);
-    } else {
-      // Verificar si se puede tomar
-      if (!puedeTomarse(materia)) {
-        const faltantes = materia.prerequisitosNormalizados
-          .filter(p => !materiasCompletadas.has(p));
-        
-        if (faltantes.length > 0) {
-          alert(`Para tomar "${materia.nombre}" necesitas completar:\n${faltantes.join("\n")}`);
-        }
-        return;
-      }
-      materiasCompletadas.add(materia.codigoNormalizado);
-    }
-    
-    // Guardar y actualizar
-    guardarProgreso();
-    renderMalla(); // Vuelve a renderizar toda la malla
-    actualizarPlanificador();
-    actualizarResumenProgreso();
-  });
+  bloque.addEventListener("click", () => manejarClicMateria(materia));
 
-  // Crear contenido
   const tabla = document.createElement("div");
   tabla.className = "info-tabla";
   tabla.innerHTML = `
@@ -165,28 +129,38 @@ function crearBloqueMateria(materia) {
   nombre.className = "nombre-materia";
   nombre.textContent = materia.nombre;
 
-  // Tooltip con prerrequisitos
-  if (materia.prerequisitosNormalizados.length > 0) {
-    bloque.title = `Prerrequisitos: ${materia.prerequisitosNormalizados.join(", ")}`;
-  }
-
   bloque.appendChild(tabla);
   bloque.appendChild(nombre);
 
   return bloque;
 }
 
+function manejarClicMateria(materia) {
+  if (materiasCompletadas.has(materia.idUnico)) {
+    materiasCompletadas.delete(materia.idUnico);
+  } else {
+    if (!puedeTomarse(materia)) {
+      const faltantes = materia.prerequisitosValidos
+        .filter(id => !materiasCompletadas.has(id))
+        .map(id => materias.find(m => m.idUnico === id)?.nombre)
+        .filter(Boolean);
+      
+      if (faltantes.length > 0) {
+        alert(`Prerrequisitos faltantes para "${materia.nombre}":\n${faltantes.join("\n")}`);
+      }
+      return;
+    }
+    materiasCompletadas.add(materia.idUnico);
+  }
+  
+  guardarProgreso();
+  renderMalla();
+  actualizarPlanificador();
+  actualizarResumenProgreso();
+}
+
 function puedeTomarse(materia) {
-  // Si ya está completada, se puede desmarcar
-  if (materiasCompletadas.has(materia.codigoNormalizado)) return true;
-  
-  // Si no tiene prerrequisitos, se puede tomar
-  if (materia.prerequisitosNormalizados.length === 0) return true;
-  
-  // Verificar todos los prerrequisitos
-  return materia.prerequisitosNormalizados.every(prereq => 
-    materiasCompletadas.has(prereq)
-  );
+  return materia.prerequisitosValidos.every(id => materiasCompletadas.has(id));
 }
 
 function agruparPorNivel(materias) {
@@ -200,24 +174,15 @@ function agruparPorNivel(materias) {
 }
 
 function guardarProgreso() {
-  const codigosCompletados = Array.from(materiasCompletadas);
-  try {
-    localStorage.setItem("materiasCompletadas", JSON.stringify(codigosCompletados));
-  } catch (e) {
-    console.error("Error al guardar progreso:", e);
-  }
+  const idsCompletados = Array.from(materiasCompletadas);
+  localStorage.setItem("materiasCompletadas", JSON.stringify(idsCompletados));
 }
 
 function cargarProgreso() {
-  try {
-    const data = localStorage.getItem("materiasCompletadas");
-    if (data) {
-      const codigos = JSON.parse(data);
-      materiasCompletadas = new Set(codigos.filter(c => typeof c === 'string' && c.length > 0));
-    }
-  } catch (e) {
-    console.error("Error al cargar progreso:", e);
-    materiasCompletadas = new Set();
+  const data = localStorage.getItem("materiasCompletadas");
+  if (data) {
+    const ids = JSON.parse(data);
+    materiasCompletadas = new Set(ids);
   }
 }
 
@@ -232,24 +197,22 @@ function limpiarProgreso() {
 }
 
 function actualizarResumenProgreso() {
-  const totalMaterias = materias.filter(m => m.codigoNormalizado).length;
+  const totalMaterias = materias.length;
   const completadas = materiasCompletadas.size;
-  const porcentaje = totalMaterias > 0 ? Math.round((completadas / totalMaterias) * 100) : 0;
+  const porcentaje = Math.round((completadas / totalMaterias) * 100);
   
-  // Actualizar barra de progreso
   document.getElementById("barra-progreso").style.width = `${porcentaje}%`;
   document.getElementById("texto-progreso").textContent = `${porcentaje}% completado`;
   
-  // Calcular créditos completados
   const creditosCompletados = materias
-    .filter(m => materiasCompletadas.has(m.codigoNormalizado))
+    .filter(m => materiasCompletadas.has(m.idUnico))
     .reduce((sum, m) => sum + (m.creditos || 0), 0);
   
-  // Actualizar textos
   document.getElementById("total-creditos").textContent = `Créditos completados: ${creditosCompletados}`;
   document.getElementById("total-materias").textContent = `Materias completadas: ${completadas}/${totalMaterias}`;
 }
 
+// ... (funciones del planificador y PDF se mantienen igual)
 /* -------- Planificador Inteligente -------- */
 function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
