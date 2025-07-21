@@ -1,156 +1,189 @@
+// script.js
+
+const nivelesContainer = document.getElementById("niveles-container");
+const sugerenciasDiv = document.getElementById("sugerencias-materias");
+const totalCreditosSpan = document.getElementById("total-creditos");
+
+// Cargar datos de materias (desde data.json o variable embebida si lo haces local)
 let materias = [];
-let materiasCompletadas = new Set();
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const response = await fetch("malla.json");
-  materias = await response.json();
-  cargarProgreso();
-  renderMalla();
-  actualizarPlanificador();
-});
+fetch("materias.json")
+  .then(res => res.json())
+  .then(data => {
+    materias = data;
+    construirMalla();
+    cargarProgreso();
+    actualizarBloqueo();
+    actualizarPlanificador();
+  });
 
-function renderMalla() {
-  const container = document.getElementById("niveles-container");
-  container.innerHTML = "";
-
-  const niveles = agruparPorNivel(materias);
-  for (const nivel in niveles) {
-    const columna = document.createElement("div");
-    columna.className = "columna-nivel";
-
+function construirMalla() {
+  const niveles = [...new Set(materias.map(m => m.nivel))].sort((a, b) => a - b);
+  niveles.forEach(nivel => {
+    const col = document.createElement("div");
+    col.className = "columna-nivel";
     const titulo = document.createElement("h2");
     titulo.textContent = `Nivel ${nivel}`;
-    columna.appendChild(titulo);
+    col.appendChild(titulo);
 
-    niveles[nivel].forEach((materia) => {
-      const bloque = crearBloqueMateria(materia);
-      columna.appendChild(bloque);
+    materias.filter(m => m.nivel === nivel).forEach(materia => {
+      const card = crearTarjetaMateria(materia);
+      col.appendChild(card);
     });
 
-    container.appendChild(columna);
-  }
+    nivelesContainer.appendChild(col);
+  });
 }
 
-function crearBloqueMateria(materia) {
-  const bloque = document.createElement("div");
-  bloque.className = `materia ${materia.area}`;
-  if (materiasCompletadas.has(materia.codigo)) {
-    bloque.classList.add("tachada");
-  } else if (!puedeTomarse(materia)) {
-    bloque.classList.add("bloqueada");
-  }
-
-  bloque.onclick = () => {
-    if (!puedeTomarse(materia)) return;
-    if (materiasCompletadas.has(materia.codigo)) {
-      materiasCompletadas.delete(materia.codigo);
-    } else {
-      materiasCompletadas.add(materia.codigo);
-    }
-    guardarProgreso();
-    renderMalla();
-    actualizarPlanificador();
-  };
+function crearTarjetaMateria(materia) {
+  const div = document.createElement("div");
+  div.className = `materia ${materia.area}`;
+  div.dataset.curso = materia.curso;
+  div.dataset.codigo = materia.codigo || "";
+  div.dataset.nivel = materia.nivel;
+  div.dataset.creditos = materia.creditos;
 
   const tabla = document.createElement("div");
   tabla.className = "info-tabla";
-
-  tabla.innerHTML = `
-    <div class="celda small">${materia.codigo || "-"}</div>
-    <div class="celda small">${materia.creditos}</div>
-    <div class="celda small">${materia.ht}</div>
-    <div class="celda small">${materia.hpr}</div>
-    <div class="celda small">${materia.curso}</div>
-    <div class="celda small">${materia.area}</div>
-    <div class="celda small">${materia.prerequisitos.join(", ") || "-"}</div>
-  `;
+  const columnas = [
+    materia.codigo || "", materia.area, materia.curso, materia.creditos, materia.ht, materia.hpr, ""
+  ];
+  columnas.forEach(c => {
+    const celda = document.createElement("div");
+    celda.className = "celda";
+    celda.textContent = c;
+    tabla.appendChild(celda);
+  });
 
   const nombre = document.createElement("div");
   nombre.className = "nombre-materia";
   nombre.textContent = materia.nombre;
 
-  bloque.appendChild(tabla);
-  bloque.appendChild(nombre);
+  div.appendChild(tabla);
+  div.appendChild(nombre);
 
-  return bloque;
-}
-
-function agruparPorNivel(materias) {
-  const niveles = {};
-  materias.forEach((m) => {
-    const nivel = m.nivel || "Sin Nivel";
-    if (!niveles[nivel]) niveles[nivel] = [];
-    niveles[nivel].push(m);
+  div.addEventListener("click", () => {
+    div.classList.toggle("tachada");
+    actualizarBloqueo();
+    guardarProgreso();
+    actualizarPlanificador();
   });
-  return niveles;
+
+  return div;
 }
 
-function puedeTomarse(materia) {
-  return materia.prerequisitos.every((pr) => materiasCompletadas.has(pr));
+function actualizarBloqueo() {
+  const tachadas = Array.from(document.querySelectorAll(".materia.tachada"))
+    .map(m => m.dataset.curso);
+
+  materias.forEach(m => {
+    const card = document.querySelector(`.materia[data-curso='${m.curso}']`);
+    if (!card) return;
+
+    if (tachadas.includes(m.curso)) {
+      card.classList.remove("bloqueada");
+      return;
+    }
+
+    const requisitosCumplidos = (m.prerequisitos || []).every(req => tachadas.includes(req));
+    if (!requisitosCumplidos) {
+      card.classList.add("bloqueada");
+    } else {
+      card.classList.remove("bloqueada");
+    }
+  });
 }
 
 function guardarProgreso() {
-  localStorage.setItem("materiasCompletadas", JSON.stringify([...materiasCompletadas]));
+  const tachadas = Array.from(document.querySelectorAll(".materia.tachada"))
+    .map(m => m.dataset.curso);
+  localStorage.setItem("materiasCompletadas", JSON.stringify(tachadas));
 }
 
 function cargarProgreso() {
-  const data = localStorage.getItem("materiasCompletadas");
-  if (data) materiasCompletadas = new Set(JSON.parse(data));
+  const saved = JSON.parse(localStorage.getItem("materiasCompletadas")) || [];
+  saved.forEach(curso => {
+    const card = document.querySelector(`.materia[data-curso='${curso}']`);
+    if (card) card.classList.add("tachada");
+  });
 }
 
 function limpiarProgreso() {
-  localStorage.removeItem("materiasCompletadas");
-  materiasCompletadas.clear();
-  renderMalla();
+  document.querySelectorAll(".materia.tachada").forEach(m => m.classList.remove("tachada"));
+  guardarProgreso();
+  actualizarBloqueo();
   actualizarPlanificador();
 }
 
-/* ---------------- Planificador Inteligente ---------------- */
-
 function actualizarPlanificador() {
-  const contenedor = document.getElementById("sugerencias-materias");
-  const totalCreditos = document.getElementById("total-creditos");
-  contenedor.innerHTML = "";
+  sugerenciasDiv.innerHTML = "";
+  const tachadas = Array.from(document.querySelectorAll(".materia.tachada"))
+    .map(m => m.dataset.curso);
 
-  const disponibles = materias.filter((m) =>
-    !materiasCompletadas.has(m.codigo) &&
-    puedeTomarse(m) &&
-    m.codigo // que tenga código
+  // Detectar niveles incompletos y tomar los 2 más cercanos
+  const nivelesPendientes = [...new Set(materias
+    .filter(m => !tachadas.includes(m.curso))
+    .map(m => m.nivel))].sort((a, b) => a - b);
+  const nivelesObjetivo = nivelesPendientes.slice(0, 2);
+
+  // Materias candidatas de esos niveles y con prerequisitos cumplidos
+  const disponibles = materias.filter(m =>
+    nivelesObjetivo.includes(m.nivel) &&
+    !tachadas.includes(m.curso) &&
+    (m.prerequisitos || []).every(req => tachadas.includes(req))
   );
 
-  // Prioriza las materias que desbloquean más (más dependientes)
-  disponibles.sort((a, b) => contarDesbloqueos(b.codigo) - contarDesbloqueos(a.codigo));
+  // Generar combinaciones posibles hasta 18 créditos
+  const combinaciones = generarCombinaciones(disponibles, 18);
+  const evaluadas = combinaciones.map(combo => {
+    const peso = combo.reduce((sum, mat) => {
+      const desbloqueadas = materias.filter(m2 =>
+        !tachadas.includes(m2.curso) &&
+        (m2.prerequisitos || []).includes(mat.curso)
+      ).length;
+      return sum + desbloqueadas;
+    }, 0);
+    return { combo, peso, creditos: combo.reduce((s, m) => s + m.creditos, 0) };
+  });
 
-  let seleccionadas = [];
-  let sumaCreditos = 0;
-  for (const m of disponibles) {
-    if (sumaCreditos + m.creditos <= 18) {
-      seleccionadas.push(m);
-      sumaCreditos += m.creditos;
+  evaluadas.sort((a, b) => b.peso - a.peso || b.creditos - a.creditos);
+
+  // Mostrar 2 mejores combinaciones
+  [0, 1].forEach(i => {
+    const pack = evaluadas[i];
+    if (!pack) return;
+    const contenedor = document.createElement("div");
+    contenedor.style.marginBottom = "20px";
+    pack.combo.forEach(m => {
+      const card = crearTarjetaMateria(m);
+      contenedor.appendChild(card);
+    });
+    const label = document.createElement("p");
+    label.textContent = `Opción ${i + 1}: ${pack.creditos} créditos, desbloquea ${pack.peso}`;
+    sugerenciasDiv.appendChild(label);
+    sugerenciasDiv.appendChild(contenedor);
+  });
+
+  totalCreditosSpan.textContent = `Créditos sugeridos: ${evaluadas[0]?.creditos || 0}`;
+}
+
+function generarCombinaciones(lista, maxCreditos) {
+  const resultado = [];
+
+  function backtrack(start, combo, suma) {
+    if (suma <= maxCreditos && combo.length > 0) {
+      resultado.push([...combo]);
+    }
+    for (let i = start; i < lista.length; i++) {
+      const m = lista[i];
+      if (suma + m.creditos <= maxCreditos) {
+        combo.push(m);
+        backtrack(i + 1, combo, suma + m.creditos);
+        combo.pop();
+      }
     }
   }
 
-  for (const mat of seleccionadas) {
-    const div = document.createElement("div");
-    div.className = `materia ${mat.area}`;
-    div.innerHTML = `
-      <div class="info-tabla">
-        <div class="celda small">${mat.codigo}</div>
-        <div class="celda small">${mat.creditos}</div>
-        <div class="celda small">${mat.ht}</div>
-        <div class="celda small">${mat.hpr}</div>
-        <div class="celda small">${mat.curso}</div>
-        <div class="celda small">${mat.area}</div>
-        <div class="celda small">${mat.prerequisitos.join(", ") || "-"}</div>
-      </div>
-      <div class="nombre-materia">${mat.nombre}</div>
-    `;
-    contenedor.appendChild(div);
-  }
-
-  totalCreditos.textContent = `Créditos sugeridos: ${sumaCreditos}`;
-}
-
-function contarDesbloqueos(codigo) {
-  return materias.filter((m) => m.prerequisitos.includes(codigo)).length;
+  backtrack(0, [], 0);
+  return resultado;
 }
