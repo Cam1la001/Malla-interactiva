@@ -4,24 +4,30 @@ let filtroNivelActual = 0;
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Cargar datos
-  const response = await fetch("malla.json");
-  materias = await response.json();
-  
-  // Configurar eventos
-  document.getElementById("guardar-btn").onclick = guardarProgreso;
-  document.getElementById("limpiar-btn").onclick = limpiarProgreso;
-  document.getElementById("exportar-btn").onclick = descargarPDF;
-  document.getElementById("aplicar-filtro").onclick = aplicarFiltroNivel;
-  
-  // Inicializar
-  cargarProgreso();
-  renderMalla();
-  actualizarPlanificador();
-  actualizarResumenProgreso();
+  try {
+    const response = await fetch("malla.json");
+    if (!response.ok) throw new Error("Error al cargar el archivo malla.json");
+    materias = await response.json();
+    
+    // Configurar eventos
+    document.getElementById("guardar-btn").addEventListener("click", guardarProgreso);
+    document.getElementById("limpiar-btn").addEventListener("click", limpiarProgreso);
+    document.getElementById("exportar-btn").addEventListener("click", descargarPDF);
+    document.getElementById("aplicar-filtro").addEventListener("click", aplicarFiltroNivel);
+    
+    // Inicializar
+    cargarProgreso();
+    renderMalla();
+    actualizarPlanificador();
+    actualizarResumenProgreso();
+  } catch (error) {
+    console.error("Error inicial:", error);
+    alert("Error al cargar los datos. Por favor recarga la página.");
+  }
 });
 
 function aplicarFiltroNivel() {
-  filtroNivelActual = parseInt(document.getElementById("filtro-nivel").value);
+  filtroNivelActual = parseInt(document.getElementById("filtro-nivel").value) || 0;
   renderMalla();
 }
 
@@ -49,26 +55,35 @@ function renderMalla() {
 
     // Ordenar materias por código
     const materiasNivel = niveles[nivel].sort((a, b) => {
-      const codA = a.codigo?.toString() || "";
-      const codB = b.codigo?.toString() || "";
+      const codA = obtenerCodigoMateria(a);
+      const codB = obtenerCodigoMateria(b);
       return codA.localeCompare(codB);
     });
 
     materiasNivel.forEach((materia) => {
       const bloque = crearBloqueMateria(materia);
-      columna.appendChild(bloque);
+      if (bloque) columna.appendChild(bloque);
     });
 
     container.appendChild(columna);
   }
 }
 
+function obtenerCodigoMateria(materia) {
+  if (Array.isArray(materia.codigo)) {
+    return materia.codigo.join(",") || "";
+  }
+  return materia.codigo?.toString() || "";
+}
+
 function crearBloqueMateria(materia) {
   const bloque = document.createElement("div");
   bloque.className = `materia ${materia.area}`;
   
-  // Manejar estado de la materia
-  const codigoMateria = materia.codigo?.toString() || "";
+  // Obtener código de materia (manejar casos edge)
+  const codigoMateria = obtenerCodigoMateria(materia);
+  
+  // Configurar estados
   if (codigoMateria && materiasCompletadas.has(codigoMateria)) {
     bloque.classList.add("tachada");
   } else if (!puedeTomarse(materia)) {
@@ -76,26 +91,34 @@ function crearBloqueMateria(materia) {
   }
 
   // Configurar evento de clic
-  bloque.onclick = () => {
-    if (!codigoMateria || !puedeTomarse(materia)) return;
+  bloque.addEventListener("click", function(e) {
+    // Solo materias con código pueden marcarse
+    if (!codigoMateria) return;
     
-    if (materiasCompletadas.has(codigoMateria)) {
-      materiasCompletadas.delete(codigoMateria);
-    } else {
-      materiasCompletadas.add(codigoMateria);
+    // Verificar si está bloqueada
+    if (this.classList.contains("bloqueada")) {
+      console.log("Materia bloqueada:", materia.nombre);
+      return;
     }
     
+    // Alternar estado
+    if (materiasCompletadas.has(codigoMateria)) {
+      materiasCompletadas.delete(codigoMateria);
+      this.classList.remove("tachada");
+    } else {
+      materiasCompletadas.add(codigoMateria);
+      this.classList.add("tachada");
+    }
+    
+    // Actualizar todo
     guardarProgreso();
-    renderMalla();
     actualizarPlanificador();
     actualizarResumenProgreso();
-  };
+  });
 
-  // Crear contenido del bloque
+  // Crear contenido
   const tabla = document.createElement("div");
   tabla.className = "info-tabla";
-
-  // Mostrar información clave
   tabla.innerHTML = `
     <div class="celda">${materia.creditos} CR</div>
     <div class="celda">${materia.ht} HT</div>
@@ -110,6 +133,7 @@ function crearBloqueMateria(materia) {
   // Tooltip con prerrequisitos
   if (materia.prerequisitos?.length > 0) {
     bloque.title = `Prerrequisitos: ${materia.prerequisitos.join(", ")}`;
+    bloque.style.cursor = "pointer";
   }
 
   bloque.appendChild(tabla);
@@ -129,43 +153,63 @@ function agruparPorNivel(materias) {
 }
 
 function puedeTomarse(materia) {
-  // Solo materias con código pueden marcarse
-  const codigoMateria = materia.codigo?.toString() || "";
+  const codigoMateria = obtenerCodigoMateria(materia);
   if (!codigoMateria) return false;
   
   // Verificar prerrequisitos
-  return materia.prerequisitos?.every(pr => 
-    pr && materiasCompletadas.has(pr.toString())
-  ) ?? true;
+  const prerequisitos = materia.prerequisitos || [];
+  return prerequisitos.every(pr => {
+    const codigoPr = pr?.toString()?.trim() || "";
+    return codigoPr === "" || materiasCompletadas.has(codigoPr);
+  });
 }
 
 function guardarProgreso() {
-  const codigosCompletados = Array.from(materiasCompletadas).filter(c => c);
-  localStorage.setItem("materiasCompletadas", JSON.stringify(codigosCompletados));
+  const codigosCompletados = Array.from(materiasCompletadas).filter(c => c && c.trim() !== "");
+  try {
+    localStorage.setItem("materiasCompletadas", JSON.stringify(codigosCompletados));
+    console.log("Progreso guardado:", codigosCompletados);
+  } catch (e) {
+    console.error("Error al guardar progreso:", e);
+  }
 }
 
 function cargarProgreso() {
-  const data = localStorage.getItem("materiasCompletadas");
-  if (data) {
-    const codigos = JSON.parse(data);
-    materiasCompletadas = new Set(codigos.filter(c => c));
+  try {
+    const data = localStorage.getItem("materiasCompletadas");
+    if (data) {
+      const codigos = JSON.parse(data);
+      // Filtrar solo códigos válidos (strings no vacíos)
+      materiasCompletadas = new Set(codigos.filter(c => 
+        c && typeof c === 'string' && c.trim().length > 0
+      ));
+      console.log("Progreso cargado:", materiasCompletadas);
+    }
+  } catch (e) {
+    console.error("Error al cargar progreso:", e);
+    materiasCompletadas = new Set();
   }
 }
 
 function limpiarProgreso() {
   if (confirm("¿Estás seguro de que quieres borrar todo tu progreso?")) {
-    localStorage.removeItem("materiasCompletadas");
-    materiasCompletadas.clear();
-    renderMalla();
-    actualizarPlanificador();
-    actualizarResumenProgreso();
+    try {
+      localStorage.removeItem("materiasCompletadas");
+      materiasCompletadas.clear();
+      renderMalla();
+      actualizarPlanificador();
+      actualizarResumenProgreso();
+      console.log("Progreso limpiado");
+    } catch (e) {
+      console.error("Error al limpiar progreso:", e);
+    }
   }
 }
 
 function actualizarResumenProgreso() {
-  const totalMaterias = materias.filter(m => m.codigo).length;
+  const totalMaterias = materias.filter(m => obtenerCodigoMateria(m) !== "").length;
   const completadas = materiasCompletadas.size;
-  const porcentaje = Math.round((completadas / totalMaterias) * 100);
+  const porcentaje = totalMaterias > 0 ? Math.round((completadas / totalMaterias) * 100) : 0;
   
   // Actualizar barra de progreso
   document.getElementById("barra-progreso").style.width = `${porcentaje}%`;
@@ -173,7 +217,10 @@ function actualizarResumenProgreso() {
   
   // Calcular créditos completados
   const creditosCompletados = materias
-    .filter(m => m.codigo && materiasCompletadas.has(m.codigo.toString()))
+    .filter(m => {
+      const codigo = obtenerCodigoMateria(m);
+      return codigo && materiasCompletadas.has(codigo);
+    })
     .reduce((sum, m) => sum + (m.creditos || 0), 0);
   
   // Actualizar textos
@@ -188,7 +235,7 @@ function actualizarPlanificador() {
 
   // Filtrar materias disponibles (con código, no completadas y que se pueden tomar)
   const disponibles = materias.filter(m => {
-    const codigo = m.codigo?.toString() || "";
+    const codigo = obtenerCodigoMateria(m);
     return codigo && 
            !materiasCompletadas.has(codigo) && 
            puedeTomarse(m);
@@ -202,7 +249,7 @@ function actualizarPlanificador() {
 
   // Calcular peso para cada materia
   const materiasConPeso = disponibles.map(m => {
-    const codigo = m.codigo.toString();
+    const codigo = obtenerCodigoMateria(m);
     return {
       ...m,
       peso: calcularPesoMateria(m)
@@ -250,7 +297,7 @@ function actualizarPlanificador() {
 }
 
 function calcularPesoMateria(materia) {
-  const codigo = materia.codigo.toString();
+  const codigo = obtenerCodigoMateria(materia);
   const creditos = materia.creditos || 0;
   const nivel = materia.nivel || 10;
   
@@ -270,7 +317,7 @@ function calcularPesoMateria(materia) {
 function contarDesbloqueos(codigo) {
   return materias.filter(m => 
     m.prerequisitos?.includes(codigo) && 
-    !materiasCompletadas.has(m.codigo?.toString() || "")
+    !materiasCompletadas.has(obtenerCodigoMateria(m))
   ).length;
 }
 
@@ -280,7 +327,7 @@ function generarOpcionInscripcion(materiasOrdenadas) {
   const materiasConsideradas = new Set();
   
   for (const materia of materiasOrdenadas) {
-    const codigo = materia.codigo.toString();
+    const codigo = obtenerCodigoMateria(materia);
     
     // Saltar si ya se consideró esta materia o excede los créditos
     if (materiasConsideradas.has(codigo) || 
@@ -303,25 +350,29 @@ function generarOpcionInscripcion(materiasOrdenadas) {
 function descargarPDF() {
   const element = document.createElement("div");
   element.className = "pdf-container";
+  element.style.padding = "20px";
   
   // Crear contenido para el PDF
   element.innerHTML = `
-    <h1>Planificación Académica - Ingeniería Mecatrónica</h1>
-    <div class="pdf-progreso">
-      <h2>Progreso Actual</h2>
+    <h1 style="text-align: center; color: #2c3e50;">Planificación Académica - Ingeniería Mecatrónica</h1>
+    <div class="pdf-progreso" style="margin-bottom: 20px;">
+      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Progreso Actual</h2>
       <p>${document.getElementById("texto-progreso").textContent}</p>
       <p>${document.getElementById("total-creditos").textContent}</p>
       <p>${document.getElementById("total-materias").textContent}</p>
     </div>
-    <div class="pdf-malla" id="pdf-malla"></div>
+    <div class="pdf-malla" id="pdf-malla" style="margin-bottom: 30px;"></div>
     <div class="pdf-sugerencias">
-      <h2>Sugerencias de Inscripción</h2>
+      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Sugerencias de Inscripción</h2>
       <div id="pdf-sugerencias"></div>
     </div>
   `;
   
   // Clonar la malla actual
   const mallaClone = document.getElementById("niveles-container").cloneNode(true);
+  mallaClone.style.display = "grid";
+  mallaClone.style.gridTemplateColumns = "repeat(5, 1fr)";
+  mallaClone.style.gap = "10px";
   element.querySelector("#pdf-malla").appendChild(mallaClone);
   
   // Clonar las sugerencias
