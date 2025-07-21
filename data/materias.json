@@ -482,5 +482,170 @@
     "nivel": 7,
     "area": "IMTR",
     "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Ciudadania Global",
+    "curso": "CHUM-H05A",
+    "creditos": 2,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 8,
+    "area": "CHUM",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Electronica de potencia",
+    "curso": "IETR-C04A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 8,
+    "area": "IETR",
+    "prerequisitos": ["6D"]
+  },
+  {
+    "codigo": "8C",
+    "nombre": "Robotica",
+    "curso": "IMTR-A03A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 8,
+    "area": "IMTR",
+    "prerequisitos": ["5C","6C"]
+  },
+  {
+    "codigo": "8D",
+    "nombre": "Sistemas mecatrónicos programables",
+    "curso": "IMTR-C01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 1,
+    "nivel": 8,
+    "area": "IMTR",
+    "prerequisitos": ["5F","3F","2E"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Electiva complementaria II",
+    "curso": "IMTR-EC2A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 8,
+    "area": "IMTR",
+    "prerequisitos": []
+  },
+  {
+    "codigo": "8F",
+    "nombre": "Proyecto de Ingenieria I",
+    "curso": "IMTR-P01A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": ,
+    "area": "IMTR",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Ética",
+    "curso": "CHUM-H04A",
+    "creditos": 2,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "CHUM",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Control Inteligente",
+    "curso": "IMTR-A04A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "IMTR",
+    "prerequisitos": ["6C","8D"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Diseño mecatronico",
+    "curso": "IMTR-D01A",
+    "creditos": 3,
+    "ht": 4,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "IMTR",
+    "prerequisitos": ["7E","8D","8C"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Elctiva complementaria III",
+    "curso": "IMTR-EC3A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "IMTR",
+    "prerequisitos": []
+  },
+    {
+    "codigo": [],
+    "nombre": "Elctiva complementaria IV",
+    "curso": "IMTR-EC3A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "IMTR",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Proyecto de Ingenieria II",
+    "curso": "IMTR-P02A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 9,
+    "area": "IMTR",
+    "prerequisitos": ["8F"]
+  },
+  {
+    "codigo": [],
+    "nombre": "Electiva de humaidades II",
+    "curso": "CHUM-HU2A",
+    "creditos": 2,
+    "ht": 2,
+    "hpr": 0,
+    "nivel": 10,
+    "area": "CHUM",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Electiva empresarial",
+    "curso": "IIND-EE1A",
+    "creditos": 3,
+    "ht": 3,
+    "hpr": 0,
+    "nivel": 10,
+    "area": "IIND",
+    "prerequisitos": []
+  },
+  {
+    "codigo": [],
+    "nombre": "Practica profesional",
+    "curso": "IMTR-P03A",
+    "creditos": 9,
+    "ht": 0,
+    "hpr": 40,
+    "nivel": 10,
+    "area": "IMTR",
+    "prerequisitos": ["6C","8D","7E","8F"]
   }
 ]
