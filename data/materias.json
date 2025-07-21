@@ -332,7 +332,7 @@
   {
     "codigo": "5E",
     "nombre": "Materiales I",
-    "curso": "IMEC-F08A",
+    "curso": "IMEC-M01A",
     "creditos": 3,
     "ht": 3,
     "hpr": 1,
@@ -545,7 +545,7 @@
     "creditos": 3,
     "ht": 3,
     "hpr": 0,
-    "nivel": ,
+    "nivel": 8,
     "area": "IMTR",
     "prerequisitos": []
   },
