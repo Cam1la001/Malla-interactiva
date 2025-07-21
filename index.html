@@ -7,21 +7,51 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Malla de Ingeniería Mecatrónica</h1>
-  <p class="instrucciones">Haz clic en una materia para marcarla como completada. Las que cumplen los prerrequisitos se desbloquean automáticamente.</p>
+  <div class="contenedor-principal">
+    <h1>Malla de Ingeniería Mecatrónica</h1>
+    <p class="instrucciones">Haz clic en una materia para marcarla como completada. Las materias con prerrequisitos cumplidos se desbloquean automáticamente.</p>
 
-  <div class="botones-acciones">
-    <button onclick="guardarProgreso()">Guardar progreso</button>
-    <button onclick="limpiarProgreso()">Limpiar progreso</button>
-    <button onclick="descargarPDF()">Descargar PDF</button>
+    <div class="botones-acciones">
+      <button id="guardar-btn">Guardar progreso</button>
+      <button id="limpiar-btn">Limpiar progreso</button>
+      <button id="exportar-btn">Descargar PDF</button>
+    </div>
+
+    <div class="controles-malla">
+      <label for="filtro-nivel">Filtrar por nivel:</label>
+      <select id="filtro-nivel">
+        <option value="0">Todos los niveles</option>
+        <option value="1">Nivel 1</option>
+        <option value="2">Nivel 2</option>
+        <option value="3">Nivel 3</option>
+        <option value="4">Nivel 4</option>
+        <option value="5">Nivel 5</option>
+        <option value="6">Nivel 6</option>
+        <option value="7">Nivel 7</option>
+        <option value="8">Nivel 8</option>
+        <option value="9">Nivel 9</option>
+        <option value="10">Nivel 10</option>
+      </select>
+      <button id="aplicar-filtro">Aplicar</button>
+    </div>
+
+    <div class="resumen-progreso">
+      <div class="barra-progreso">
+        <div class="progreso-llenado" id="barra-progreso"></div>
+      </div>
+      <span id="texto-progreso">0% completado</span>
+    </div>
+
+    <div class="grid-malla" id="niveles-container"></div>
+
+    <h2 class="planificador-titulo">Planificador Inteligente de Materias</h2>
+    <div class="contenedor-sugerencias" id="sugerencias-materias"></div>
+
+    <div class="totales">
+      <p id="total-creditos" class="total-creditos">Créditos completados: 0</p>
+      <p id="total-materias" class="total-materias">Materias completadas: 0/0</p>
+    </div>
   </div>
-
-  <div class="grid-malla" id="niveles-container"></div>
-
-  <h2 class="planificador-titulo">Planificador Inteligente de Materias</h2>
-  <div id="sugerencias-materias"></div>
-
-  <p id="total-creditos" class="total-creditos"></p>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
