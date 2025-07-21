@@ -1,6 +1,6 @@
 [
   {
-    "codigo": [""],
+    "codigo": "CHUM-H01A",
     "nombre": "Taller de Comprensión Lectora",
     "curso": "CHUM-H01A",
     "creditos": 3,
@@ -44,7 +44,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "ECOU-U01A",
     "nombre": "Desarrollo Universitario",
     "curso": "ECOU-U01A",
     "creditos": 0,
@@ -55,7 +55,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IMEC-D01A",
     "nombre": "Expresión Gráfica",
     "curso": "IMEC-D01A",
     "creditos": 2,
@@ -165,7 +165,7 @@
     "prerequisitos": ["2A"]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-H02A",
     "nombre": "Taller de escritura académica",
     "curso": "CHUM-H02A",
     "creditos": 3,
@@ -231,7 +231,7 @@
     "prerequisitos": ["3A"]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-H03A",
     "nombre": "Constitución Política",
     "curso": "CHUM-H03A",
     "creditos": 2,
@@ -242,7 +242,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "CBAS-F03A",
     "nombre": "Fisica Calor y Ondas",
     "curso": "CBAS-F03A",
     "creditos": 4,
@@ -363,7 +363,7 @@
     "prerequisitos": ["5A"]
   },
   {
-    "codigo": [""],
+    "codigo": "AEMP-G04A",
     "nombre": "Creatividad y emprendimiento",
     "curso": "AEMP-G04A",
     "creditos": 3,
@@ -407,7 +407,7 @@
     "prerequisitos": ["4F"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMEC-M03A",
     "nombre": "Tecnologia de fabricación",
     "curso": "IMEC-M03A",
     "creditos": 3,
@@ -418,7 +418,7 @@
     "prerequisitos": ["5E"]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-HU1A",
     "nombre": "Electiva de humanidades I",
     "curso": "CHUM-HU1A",
     "creditos": 2,
@@ -429,7 +429,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "ECON-M12A",
     "nombre": "Formulación y Evaluación de PR",
     "curso": "ECON-M12A",
     "creditos": 3,
@@ -440,7 +440,7 @@
     "prerequisitos": ["3C"]
   },
   {
-    "codigo": [""],
+    "codigo": "IETR-D03A",
     "nombre": "Sistemas Embebidos",
     "curso": "IETR-D03A",
     "creditos": 3,
@@ -451,7 +451,7 @@
     "prerequisitos": ["3F"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-A01A",
     "nombre": "Sensores e instrumentación",
     "curso": "IMTR-A01A",
     "creditos": 3,
@@ -473,7 +473,7 @@
     "prerequisitos": ["5D","3F","2E"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-EC1A",
     "nombre": "Electiva complementaria I",
     "curso": "IMTR-EC1A",
     "creditos": 3,
@@ -484,7 +484,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-H05A",
     "nombre": "Ciudadania Global",
     "curso": "CHUM-H05A",
     "creditos": 2,
@@ -495,7 +495,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IETR-C04A",
     "nombre": "Electronica de potencia",
     "curso": "IETR-C04A",
     "creditos": 3,
@@ -528,7 +528,7 @@
     "prerequisitos": ["5F","3F","2E"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-EC2A",
     "nombre": "Electiva complementaria II",
     "curso": "IMTR-EC2A",
     "creditos": 3,
@@ -550,7 +550,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-H04A",
     "nombre": "Ética",
     "curso": "CHUM-H04A",
     "creditos": 2,
@@ -561,7 +561,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-A04A",
     "nombre": "Control Inteligente",
     "curso": "IMTR-A04A",
     "creditos": 3,
@@ -572,7 +572,7 @@
     "prerequisitos": ["6C","8D"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-D01A",
     "nombre": "Diseño mecatronico",
     "curso": "IMTR-D01A",
     "creditos": 3,
@@ -583,7 +583,7 @@
     "prerequisitos": ["7E","8D","8C"]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-EC3A",
     "nombre": "Electiva complementaria III",
     "curso": "IMTR-EC3A",
     "creditos": 3,
@@ -594,8 +594,8 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
-    "nombre": "Elctiva complementaria IV",
+    "codigo": "IMTR-EC3A",
+    "nombre": "Electiva complementaria IV",
     "curso": "IMTR-EC3A",
     "creditos": 3,
     "ht": 3,
@@ -605,7 +605,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-P02A",
     "nombre": "Proyecto de Ingenieria II",
     "curso": "IMTR-P02A",
     "creditos": 3,
@@ -616,7 +616,7 @@
     "prerequisitos": ["8F"]
   },
   {
-    "codigo": [""],
+    "codigo": "CHUM-HU2A",
     "nombre": "Electiva de humaidades II",
     "curso": "CHUM-HU2A",
     "creditos": 2,
@@ -627,7 +627,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IIND-EE1A",
     "nombre": "Electiva empresarial",
     "curso": "IIND-EE1A",
     "creditos": 3,
@@ -638,7 +638,7 @@
     "prerequisitos": [""]
   },
   {
-    "codigo": [""],
+    "codigo": "IMTR-P03A",
     "nombre": "Practica profesional",
     "curso": "IMTR-P03A",
     "creditos": 9,
