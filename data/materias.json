@@ -1,6 +1,6 @@
 [
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Taller de Comprensión Lectora",
     "curso": "CHUM-H01A",
     "creditos": 3,
@@ -44,7 +44,7 @@
     "prerequisitos": []
   },
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Desarrollo Universitario",
     "curso": "ECOU-U01A",
     "creditos": 0,
@@ -55,7 +55,7 @@
     "prerequisitos": []
   },
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Expresión Gráfica",
     "curso": "IMEC-D01A",
     "creditos": 2,
@@ -165,7 +165,7 @@
     "prerequisitos": ["2A"]
   },
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Taller de escritura académica",
     "curso": "CHUM-H02A",
     "creditos": 3,
@@ -231,7 +231,7 @@
     "prerequisitos": ["3A"]
   },
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Constitución Política",
     "curso": "CHUM-H03A",
     "creditos": 2,
@@ -242,7 +242,7 @@
     "prerequisitos": []
   },
   {
-    "codigo": []
+    "codigo": [],
     "nombre": "Fisica Calor y Ondas",
     "curso": "CBAS-F03A",
     "creditos": 4,
