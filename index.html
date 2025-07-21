@@ -8,27 +8,22 @@
 </head>
 <body>
   <h1>Malla de Ingeniería Mecatrónica</h1>
-  <p class="instrucciones">
-    Haz clic en una materia para marcarla como completada. Las que cumplen los prerrequisitos se desbloquean automáticamente.
-  </p>
+  <p class="instrucciones">Haz clic en una materia para marcarla como completada. Las que cumplen los prerrequisitos se desbloquean automáticamente.</p>
 
-  <div class="acciones">
+  <div class="botones-acciones">
     <button onclick="guardarProgreso()">Guardar progreso</button>
     <button onclick="limpiarProgreso()">Limpiar progreso</button>
+    <button onclick="descargarPDF()">Descargar PDF</button>
   </div>
 
   <div class="grid-malla" id="niveles-container"></div>
 
-  <div class="planificador">
-    <h2>Planificador Inteligente de Materias</h2>
-    <div id="sugerencias-materias"></div>
-    <p id="total-creditos">Créditos sugeridos: 0</p>
+  <h2 class="planificador-titulo">Planificador Inteligente de Materias</h2>
+  <div id="sugerencias-materias"></div>
 
-    <h3>Combinación alternativa sugerida</h3>
-    <div id="segunda-sugerencia"></div>
-    <p id="creditos-alternativos">Créditos alternativos: 0</p>
-  </div>
+  <p id="total-creditos" class="total-creditos"></p>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
