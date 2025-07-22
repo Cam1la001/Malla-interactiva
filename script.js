@@ -29,7 +29,6 @@ function procesarMaterias() {
   const mapaCodigos = new Map();
   
   materias.forEach((materia, index) => {
-    // Normalizar y asegurar unicidad de códigos
     materia.codigoNormalizado = normalizarCodigo(materia.codigo) || `M${index}`;
     
     if (mapaCodigos.has(materia.codigoNormalizado)) {
@@ -38,10 +37,8 @@ function procesarMaterias() {
     }
     mapaCodigos.set(materia.codigoNormalizado, materia);
     
-    // ID único basado en índice para referencia segura
     materia.idUnico = `materia-${index}`;
     
-    // Procesar prerrequisitos
     materia.prerequisitosValidos = (materia.prerequisitos || [])
       .filter(pr => pr && pr !== '')
       .map(normalizarCodigo)
@@ -209,53 +206,129 @@ function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
   contenedor.innerHTML = "";
 
+  const ultimoNivelCompleto = calcularUltimoNivelCompleto();
   const disponibles = materias.filter(m => 
     !materiasCompletadas.has(m.idUnico) && 
     puedeTomarse(m)
   );
 
   if (disponibles.length === 0) {
-    contenedor.innerHTML = `<p class="no-sugerencias">¡Felicidades! Has completado todas las materias disponibles.</p>`;
+    contenedor.innerHTML = `<p class="no-sugerencias">¡Felicidades! Has completado todas las materias.</p>`;
     return;
   }
 
-  const materiasConPeso = disponibles.map(m => ({
-    ...m,
-    peso: calcularPesoMateria(m)
-  })).sort((a, b) => b.peso - a.peso);
-
   const opciones = [
-    generarOpcionInscripcion([...materiasConPeso]),
-    generarOpcionInscripcion([...materiasConPeso].reverse())
+    generarOpcionEstrategica(disponibles, ultimoNivelCompleto, 'estricto'),
+    generarOpcionEstrategica(disponibles, ultimoNivelCompleto, 'flexible')
   ];
 
   opciones.forEach((opcion, i) => {
     const grupo = document.createElement("div");
     grupo.className = "opcion-planificador";
-    grupo.innerHTML = `<h3>Opción ${i + 1}:</h3>`;
     
-    let creditosTotales = 0;
+    const creditosTotales = opcion.reduce((sum, m) => sum + m.creditos, 0);
+    const materiasDesbloqueadas = calcularTotalDesbloqueos(opcion);
+    const nivelesIncluidos = [...new Set(opcion.map(m => m.nivel))].sort((a,b) => a-b);
+
+    grupo.innerHTML = `
+      <h3>Opción ${i+1} (${creditosTotales} créditos)</h3>
+      <div class="detalles-opcion">
+        <span>Niveles: ${nivelesIncluidos.join(', ')}</span>
+        <span>Desbloquea: ${materiasDesbloqueadas} materias</span>
+      </div>
+      <div class="materias-lista">
+        ${opcion.map(m => `
+          <div class="materia-sugerida ${m.area}">
+            <span>${m.nombre}</span>
+            <span>${m.creditos}cr (N${m.nivel})</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
     
-    opcion.forEach(materia => {
-      creditosTotales += materia.creditos;
-      grupo.innerHTML += `
-        <div class="materia-sugerida ${materia.area}">
-          <span>${materia.nombre}</span>
-          <span>${materia.creditos} cr. (Nivel ${materia.nivel})</span>
-        </div>
-      `;
-    });
-    
-    grupo.innerHTML += `<div class="total-creditos">Total: ${creditosTotales}/18 créditos</div>`;
     contenedor.appendChild(grupo);
   });
 }
 
-function calcularPesoMateria(materia) {
-  const desbloqueos = contarDesbloqueos(materia.idUnico);
-  const pesoNivel = 1 / (materia.nivel || 10);
-  const pesoCreditos = (materia.creditos || 0) / 4;
-  return (desbloqueos * 2) + (pesoNivel * 3) + pesoCreditos;
+function generarOpcionEstrategica(materiasDisponibles, ultimoNivelCompleto, estrategia) {
+  const seleccionadas = [];
+  let creditosAcumulados = 0;
+  const materiasPorNivel = agruparPorNivel(materiasDisponibles);
+  
+  if (estrategia === 'estricto') {
+    const nivelPrioritario = ultimoNivelCompleto + 1;
+    if (materiasPorNivel[nivelPrioritario]) {
+      for (const materia of materiasPorNivel[nivelPrioritario]) {
+        if (creditosAcumulados + materia.creditos <= 18) {
+          seleccionadas.push(materia);
+          creditosAcumulados += materia.creditos;
+        }
+      }
+    }
+    
+    if (creditosAcumulados < 16) {
+      for (let nivel = nivelPrioritario; nivel <= nivelPrioritario + 2; nivel++) {
+        if (!materiasPorNivel[nivel]) continue;
+        
+        for (const materia of materiasPorNivel[nivel]) {
+          if (seleccionadas.includes(materia)) continue;
+          if (creditosAcumulados + materia.creditos <= 18) {
+            seleccionadas.push(materia);
+            creditosAcumulados += materia.creditos;
+          }
+          if (creditosAcumulados >= 16) break;
+        }
+        if (creditosAcumulados >= 16) break;
+      }
+    }
+  } else {
+    const nivelesConsiderar = [
+      ultimoNivelCompleto + 1,
+      ultimoNivelCompleto + 2,
+      ultimoNivelCompleto + 3
+    ].filter(n => n <= 10);
+
+    const materiasOrdenadas = []
+      .concat(...nivelesConsiderar.map(n => materiasPorNivel[n] || []))
+      .sort((a, b) => {
+        if (a.nivel !== b.nivel) return a.nivel - b.nivel;
+        if (a.creditos !== b.creditos) return b.creditos - a.creditos;
+        return contarDesbloqueos(b.idUnico) - contarDesbloqueos(a.idUnico);
+      });
+
+    for (const materia of materiasOrdenadas) {
+      if (creditosAcumulados + materia.creditos <= 18) {
+        seleccionadas.push(materia);
+        creditosAcumulados += materia.creditos;
+      }
+      if (creditosAcumulados >= 16) break;
+    }
+  }
+
+  return seleccionadas;
+}
+
+function calcularUltimoNivelCompleto() {
+  const niveles = {};
+  const totalPorNivel = {};
+  
+  materias.forEach(m => {
+    totalPorNivel[m.nivel] = (totalPorNivel[m.nivel] || 0) + 1;
+    if (materiasCompletadas.has(m.idUnico)) {
+      niveles[m.nivel] = (niveles[m.nivel] || 0) + 1;
+    }
+  });
+  
+  let ultimoCompleto = 0;
+  for (let nivel = 1; nivel <= 10; nivel++) {
+    if (niveles[nivel] === totalPorNivel[nivel]) {
+      ultimoCompleto = nivel;
+    } else {
+      break;
+    }
+  }
+  
+  return ultimoCompleto;
 }
 
 function contarDesbloqueos(idMateria) {
@@ -265,23 +338,9 @@ function contarDesbloqueos(idMateria) {
   ).length;
 }
 
-function generarOpcionInscripcion(materiasOrdenadas) {
-  const seleccionadas = [];
-  let creditosAcumulados = 0;
-  const materiasConsideradas = new Set();
-  
-  for (const materia of materiasOrdenadas) {
-    if (materiasConsideradas.has(materia.idUnico) || 
-        creditosAcumulados + materia.creditos > 18) continue;
-    
-    seleccionadas.push(materia);
-    creditosAcumulados += materia.creditos;
-    materiasConsideradas.add(materia.idUnico);
-    
-    if (creditosAcumulados >= 15) break;
-  }
-  
-  return seleccionadas;
+function calcularTotalDesbloqueos(materiasSeleccionadas) {
+  return materiasSeleccionadas.reduce((total, materia) => 
+    total + contarDesbloqueos(materia.idUnico), 0);
 }
 
 function descargarPDF() {
