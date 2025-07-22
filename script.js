@@ -8,10 +8,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!response.ok) throw new Error("Error al cargar malla.json");
     materias = await response.json();
     
-    // Procesar prerrequisitos y códigos
     procesarMaterias();
     
-    // Configurar eventos
     document.getElementById("guardar-btn").addEventListener("click", guardarProgreso);
     document.getElementById("limpiar-btn").addEventListener("click", limpiarProgreso);
     document.getElementById("exportar-btn").addEventListener("click", descargarPDF);
@@ -28,28 +26,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function procesarMaterias() {
-  // Primera pasada: normalizar códigos y crear mapa de referencia
   const mapaCodigos = new Map();
   
   materias.forEach((materia, index) => {
-    // Normalizar código
+    // Normalizar y asegurar unicidad de códigos
     materia.codigoNormalizado = normalizarCodigo(materia.codigo) || `M${index}`;
     
-    // Verificar unicidad
     if (mapaCodigos.has(materia.codigoNormalizado)) {
       console.warn(`Código duplicado: ${materia.codigoNormalizado} en "${materia.nombre}"`);
       materia.codigoNormalizado = `${materia.codigoNormalizado}-${index}`;
     }
     mapaCodigos.set(materia.codigoNormalizado, materia);
     
-    // Asignar ID único
+    // ID único basado en índice para referencia segura
     materia.idUnico = `materia-${index}`;
-  });
-  
-  // Segunda pasada: procesar prerrequisitos
-  materias.forEach(materia => {
+    
+    // Procesar prerrequisitos
     materia.prerequisitosValidos = (materia.prerequisitos || [])
-      .filter(pr => pr && pr !== '') // Eliminar strings vacías
+      .filter(pr => pr && pr !== '')
       .map(normalizarCodigo)
       .map(codigo => {
         const encontrado = materias.find(m => normalizarCodigo(m.codigo) === codigo);
@@ -58,7 +52,7 @@ function procesarMaterias() {
         }
         return encontrado?.idUnico;
       })
-      .filter(Boolean); // Eliminar undefined
+      .filter(Boolean);
   });
 }
 
@@ -86,7 +80,7 @@ function renderMalla() {
   const niveles = agruparPorNivel(materiasFiltradas);
   const nivelesOrdenados = Object.keys(niveles).sort((a, b) => a - b);
   
-  for (const nivel of nivelesOrdenados) {
+  nivelesOrdenados.forEach(nivel => {
     const columna = document.createElement("div");
     columna.className = "columna-nivel";
 
@@ -94,13 +88,12 @@ function renderMalla() {
     titulo.textContent = `Nivel ${nivel}`;
     columna.appendChild(titulo);
 
-    niveles[nivel].forEach((materia) => {
-      const bloque = crearBloqueMateria(materia);
-      columna.appendChild(bloque);
+    niveles[nivel].forEach(materia => {
+      columna.appendChild(crearBloqueMateria(materia));
     });
 
     container.appendChild(columna);
-  }
+  });
 }
 
 function crearBloqueMateria(materia) {
@@ -165,7 +158,7 @@ function puedeTomarse(materia) {
 
 function agruparPorNivel(materias) {
   const niveles = {};
-  materias.forEach((m) => {
+  materias.forEach(m => {
     const nivel = m.nivel || "Sin Nivel";
     if (!niveles[nivel]) niveles[nivel] = [];
     niveles[nivel].push(m);
@@ -212,15 +205,12 @@ function actualizarResumenProgreso() {
   document.getElementById("total-materias").textContent = `Materias completadas: ${completadas}/${totalMaterias}`;
 }
 
-// ... (funciones del planificador y PDF se mantienen igual)
-/* -------- Planificador Inteligente -------- */
 function actualizarPlanificador() {
   const contenedor = document.getElementById("sugerencias-materias");
   contenedor.innerHTML = "";
 
-  // Filtrar materias disponibles
   const disponibles = materias.filter(m => 
-    !materiasCompletadas.has(m.codigoNormalizado) && 
+    !materiasCompletadas.has(m.idUnico) && 
     puedeTomarse(m)
   );
 
@@ -229,19 +219,16 @@ function actualizarPlanificador() {
     return;
   }
 
-  // Calcular peso para cada materia
   const materiasConPeso = disponibles.map(m => ({
     ...m,
     peso: calcularPesoMateria(m)
   })).sort((a, b) => b.peso - a.peso);
 
-  // Generar opciones
   const opciones = [
     generarOpcionInscripcion([...materiasConPeso]),
     generarOpcionInscripcion([...materiasConPeso].reverse())
   ];
 
-  // Mostrar opciones
   opciones.forEach((opcion, i) => {
     const grupo = document.createElement("div");
     grupo.className = "opcion-planificador";
@@ -265,16 +252,16 @@ function actualizarPlanificador() {
 }
 
 function calcularPesoMateria(materia) {
-  const desbloqueos = contarDesbloqueos(materia.codigoNormalizado);
+  const desbloqueos = contarDesbloqueos(materia.idUnico);
   const pesoNivel = 1 / (materia.nivel || 10);
   const pesoCreditos = (materia.creditos || 0) / 4;
   return (desbloqueos * 2) + (pesoNivel * 3) + pesoCreditos;
 }
 
-function contarDesbloqueos(codigo) {
+function contarDesbloqueos(idMateria) {
   return materias.filter(m => 
-    m.prerequisitosNormalizados.includes(codigo) && 
-    !materiasCompletadas.has(m.codigoNormalizado)
+    m.prerequisitosValidos.includes(idMateria) && 
+    !materiasCompletadas.has(m.idUnico)
   ).length;
 }
 
@@ -284,12 +271,12 @@ function generarOpcionInscripcion(materiasOrdenadas) {
   const materiasConsideradas = new Set();
   
   for (const materia of materiasOrdenadas) {
-    if (materiasConsideradas.has(materia.codigoNormalizado) || 
+    if (materiasConsideradas.has(materia.idUnico) || 
         creditosAcumulados + materia.creditos > 18) continue;
     
     seleccionadas.push(materia);
     creditosAcumulados += materia.creditos;
-    materiasConsideradas.add(materia.codigoNormalizado);
+    materiasConsideradas.add(materia.idUnico);
     
     if (creditosAcumulados >= 15) break;
   }
@@ -297,12 +284,35 @@ function generarOpcionInscripcion(materiasOrdenadas) {
   return seleccionadas;
 }
 
-/* -------- Exportar como PDF -------- */
 function descargarPDF() {
   const element = document.createElement("div");
   element.className = "pdf-container";
+  element.style.padding = "20px";
   
-  // Configurar opciones de PDF
+  element.innerHTML = `
+    <h1 style="text-align: center; color: #2c3e50;">Planificación Académica - Ingeniería Mecatrónica</h1>
+    <div class="pdf-progreso" style="margin-bottom: 20px;">
+      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Progreso Actual</h2>
+      <p>${document.getElementById("texto-progreso").textContent}</p>
+      <p>${document.getElementById("total-creditos").textContent}</p>
+      <p>${document.getElementById("total-materias").textContent}</p>
+    </div>
+    <div class="pdf-malla" id="pdf-malla" style="margin-bottom: 30px;"></div>
+    <div class="pdf-sugerencias">
+      <h2 style="color: #2c3e50; border-bottom: 1px solid #ddd;">Sugerencias de Inscripción</h2>
+      <div id="pdf-sugerencias"></div>
+    </div>
+  `;
+  
+  const mallaClone = document.getElementById("niveles-container").cloneNode(true);
+  mallaClone.style.display = "grid";
+  mallaClone.style.gridTemplateColumns = "repeat(5, 1fr)";
+  mallaClone.style.gap = "10px";
+  element.querySelector("#pdf-malla").appendChild(mallaClone);
+  
+  const sugerenciasClone = document.getElementById("sugerencias-materias").cloneNode(true);
+  element.querySelector("#pdf-sugerencias").appendChild(sugerenciasClone);
+  
   const opt = {
     margin: 10,
     filename: 'planificacion-mecatronica.pdf',
@@ -311,6 +321,5 @@ function descargarPDF() {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
   
-  // Generar PDF
   html2pdf().set(opt).from(element).save();
 }
