@@ -290,10 +290,10 @@ h2 {
 }
 
 .detalles-opcion {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9em;
-  color: #666;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 0.85em;
   margin-bottom: 10px;
 }
 
@@ -317,6 +317,14 @@ h2 {
 .materia-sugerida:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tag-no-prioritaria {
+  background-color: rgba(0,0,0,0.2);
+  padding: 2px 5px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  margin-left: 5px;
 }
 
 .no-sugerencias {
@@ -358,6 +366,10 @@ h2 {
   
   .opcion-planificador {
     width: 100%;
+  }
+  
+  .detalles-opcion {
+    grid-template-columns: 1fr;
   }
 }
 
