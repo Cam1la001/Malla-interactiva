@@ -274,32 +274,58 @@ h2 {
 
 .opcion-planificador {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: var(--sombra);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
   width: calc(50% - 20px);
   min-width: 300px;
-  transition: transform 0.3s ease;
-}
-
-.opcion-planificador:hover {
-  transform: translateY(-5px);
 }
 
 .opcion-planificador h3 {
+  color: #2c3e50;
   margin-top: 0;
-  color: var(--color-primario);
-  border-bottom: 1px solid var(--color-borde);
-  padding-bottom: 0.5em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.detalles-opcion {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.materias-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px;
 }
 
 .materia-sugerida {
   padding: 10px;
-  margin: 8px 0;
   border-radius: 6px;
   color: white;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  transition: transform 0.2s;
+}
+
+.materia-sugerida:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.no-sugerencias {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: var(--color-primario);
+  font-size: 1.1em;
 }
 
 /* ---------- Totales ---------- */
