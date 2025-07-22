@@ -217,11 +217,27 @@ function actualizarPlanificador() {
     return;
   }
 
-  const opciones = [
-    generarOpcionEstrategica(disponibles, ultimoNivelCompleto, 'estricto'),
-    generarOpcionEstrategica(disponibles, ultimoNivelCompleto, 'flexible')
-  ];
+  // Clasificar materias por prioridad
+  const materiasPrioritarias = disponibles.filter(m => 
+    !['CHUL', 'CHUM', 'ECOU', 'AEMP'].includes(m.area)
+  );
+  
+  const materiasNoPrioritarias = disponibles.filter(m => 
+    ['CHUL', 'CHUM', 'ECOU', 'AEMP'].includes(m.area)
+  );
 
+  // Generar dos opciones distintas
+  const opciones = [
+    generarCombinacionOptima(materiasPrioritarias, materiasNoPrioritarias, ultimoNivelCompleto, 'completo'),
+    generarCombinacionOptima(materiasPrioritarias, materiasNoPrioritarias, ultimoNivelCompleto, 'balanceado')
+  ].filter(opcion => opcion.length > 0); // Filtrar opciones vacías
+
+  if (opciones.length === 0) {
+    contenedor.innerHTML = `<p class="no-sugerencias">No hay combinaciones posibles con los filtros actuales.</p>`;
+    return;
+  }
+
+  // Mostrar resultados
   opciones.forEach((opcion, i) => {
     const grupo = document.createElement("div");
     grupo.className = "opcion-planificador";
@@ -235,12 +251,14 @@ function actualizarPlanificador() {
       <div class="detalles-opcion">
         <span>Niveles: ${nivelesIncluidos.join(', ')}</span>
         <span>Desbloquea: ${materiasDesbloqueadas} materias</span>
+        <span>Prioridad: ${i === 0 ? 'Completar niveles' : 'Balance técnico'}</span>
       </div>
       <div class="materias-lista">
         ${opcion.map(m => `
           <div class="materia-sugerida ${m.area}">
             <span>${m.nombre}</span>
             <span>${m.creditos}cr (N${m.nivel})</span>
+            ${['CHUL', 'CHUM', 'ECOU', 'AEMP'].includes(m.area) ? '<span class="tag-no-prioritaria">No prioritaria</span>' : ''}
           </div>
         `).join('')}
       </div>
@@ -250,62 +268,82 @@ function actualizarPlanificador() {
   });
 }
 
-function generarOpcionEstrategica(materiasDisponibles, ultimoNivelCompleto, estrategia) {
+function generarCombinacionOptima(prioritarias, noPrioritarias, ultimoNivelCompleto, estrategia) {
   const seleccionadas = [];
   let creditosAcumulados = 0;
-  const materiasPorNivel = agruparPorNivel(materiasDisponibles);
   
-  if (estrategia === 'estricto') {
-    const nivelPrioritario = ultimoNivelCompleto + 1;
-    if (materiasPorNivel[nivelPrioritario]) {
-      for (const materia of materiasPorNivel[nivelPrioritario]) {
+  // Paso 1: Agrupar por nivel y ordenar
+  const prioritariasPorNivel = agruparYOrdenarMaterias(prioritarias, ultimoNivelCompleto);
+  const noPrioritariasPorNivel = agruparYOrdenarMaterias(noPrioritarias, ultimoNivelCompleto);
+
+  // Paso 2: Seleccionar materias según estrategia
+  if (estrategia === 'completo') {
+    // Estrategia 1: Completar niveles inferiores primero
+    for (let nivel = ultimoNivelCompleto + 1; nivel <= 10; nivel++) {
+      if (creditosAcumulados >= 17) break;
+      
+      const materiasNivel = prioritariasPorNivel[nivel] || [];
+      for (const materia of materiasNivel) {
         if (creditosAcumulados + materia.creditos <= 18) {
           seleccionadas.push(materia);
           creditosAcumulados += materia.creditos;
         }
       }
     }
+  } else {
+    // Estrategia 2: Balancear carga técnica
+    const nivelesConsiderar = [ultimoNivelCompleto + 1, ultimoNivelCompleto + 2];
     
-    if (creditosAcumulados < 16) {
-      for (let nivel = nivelPrioritario; nivel <= nivelPrioritario + 2; nivel++) {
-        if (!materiasPorNivel[nivel]) continue;
-        
-        for (const materia of materiasPorNivel[nivel]) {
-          if (seleccionadas.includes(materia)) continue;
-          if (creditosAcumulados + materia.creditos <= 18) {
-            seleccionadas.push(materia);
-            creditosAcumulados += materia.creditos;
-          }
-          if (creditosAcumulados >= 16) break;
+    for (const nivel of nivelesConsiderar) {
+      if (creditosAcumulados >= 17) break;
+      
+      const materiasNivel = prioritariasPorNivel[nivel] || [];
+      for (const materia of materiasNivel) {
+        if (creditosAcumulados + materia.creditos <= 18) {
+          seleccionadas.push(materia);
+          creditosAcumulados += materia.creditos;
         }
-        if (creditosAcumulados >= 16) break;
       }
     }
-  } else {
-    const nivelesConsiderar = [
-      ultimoNivelCompleto + 1,
-      ultimoNivelCompleto + 2,
-      ultimoNivelCompleto + 3
-    ].filter(n => n <= 10);
+  }
 
-    const materiasOrdenadas = []
-      .concat(...nivelesConsiderar.map(n => materiasPorNivel[n] || []))
-      .sort((a, b) => {
-        if (a.nivel !== b.nivel) return a.nivel - b.nivel;
-        if (a.creditos !== b.creditos) return b.creditos - a.creditos;
-        return contarDesbloqueos(b.idUnico) - contarDesbloqueos(a.idUnico);
-      });
-
-    for (const materia of materiasOrdenadas) {
-      if (creditosAcumulados + materia.creditos <= 18) {
-        seleccionadas.push(materia);
-        creditosAcumulados += materia.creditos;
+  // Paso 3: Rellenar con materias no prioritarias si es necesario (16-18 créditos)
+  if (creditosAcumulados < 17) {
+    for (let nivel = ultimoNivelCompleto + 1; nivel <= 10; nivel++) {
+      if (creditosAcumulados >= 18) break;
+      
+      const materiasNivel = noPrioritariasPorNivel[nivel] || [];
+      for (const materia of materiasNivel) {
+        if (!seleccionadas.includes(materia) && creditosAcumulados + materia.creditos <= 18) {
+          seleccionadas.push(materia);
+          creditosAcumulados += materia.creditos;
+        }
+        if (creditosAcumulados >= 17) break;
       }
-      if (creditosAcumulados >= 16) break;
     }
   }
 
   return seleccionadas;
+}
+
+function agruparYOrdenarMaterias(listaMaterias, ultimoNivelCompleto) {
+  const agrupadas = {};
+  
+  listaMaterias.forEach(materia => {
+    if (!agrupadas[materia.nivel]) agrupadas[materia.nivel] = [];
+    agrupadas[materia.nivel].push(materia);
+  });
+
+  // Ordenar cada nivel por: más desbloqueos -> más créditos
+  Object.keys(agrupadas).forEach(nivel => {
+    agrupadas[nivel].sort((a, b) => {
+      const desbloqueosDiff = contarDesbloqueos(b.idUnico) - contarDesbloqueos(a.idUnico);
+      if (desbloqueosDiff !== 0) return desbloqueosDiff;
+      return b.creditos - a.creditos;
+    });
+  });
+
+  return agrupadas;
 }
 
 function calcularUltimoNivelCompleto() {
